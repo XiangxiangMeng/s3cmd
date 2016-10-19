@@ -10,13 +10,13 @@ import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeMap;
@@ -37,13 +37,12 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
-import s3exception.InvalidParamException;
-
 public class S3Op {
     private String url_text = "";
     private String op_type = "";   //"HEAD", "GET", "PUT", "DELETE", "POST"
     private String request_uri = ""; // like "/Bucket/", "/Bucket/object" or "/Bucket/object?acl", etc
     private String canonicalized_amz_headers_str = "";
+    private String canonicalized_amz_params_str = "";
     private String signature_str = "";
     private String sub_resource = "";
     private Map<String, File> files_map;
@@ -51,6 +50,7 @@ public class S3Op {
     private boolean has_params = false;
     private boolean has_subresource = false;
     private Map<String, String> x_amz_http_headers = null;
+    private Map<String, String> response_params = null;
     
     /* used for http request header */
     private String http_MD5 = "";
@@ -67,6 +67,7 @@ public class S3Op {
     public S3Op(ParseArgs parse) {
         this.parse = parse;
         x_amz_http_headers = new TreeMap<>();
+        response_params = new TreeMap<>();
         files_map = new TreeMap<>();
         mime_types_map = new TreeMap<>();
     }
@@ -76,8 +77,8 @@ public class S3Op {
         gen_sub_resource();
         open_files();
         init_mime_types();
-        gen_canonicalized_amz_headers();
         gen_canonicalized_amz_headers_str();
+        gen_canonicalized_resource_params_str();
     }
 
     private void init_mime_types() {
@@ -259,7 +260,42 @@ public class S3Op {
             has_subresource = true;
         }
     }
-    
+
+	private void gen_canonicalized_resource_params_map() {
+		Map<String, String> http_param_map = parse.getHttp_params();
+		Iterator<Entry<String, String>> entries = http_param_map.entrySet().iterator(); 
+		String key;
+		String value;
+		
+		while (entries.hasNext()) {
+			Map.Entry<String, String> entry = entries.next();
+			key = entry.getKey();
+			value = entry.getValue();
+			
+			if (key.substring(0, 9).equalsIgnoreCase("response-")) {
+            	response_params.put(key, value);
+            }
+		}
+		
+		if (!parse.getVersion_id().isEmpty()) {
+			response_params.put("versionId", parse.getVersion_id());
+		}
+	}
+	
+	private void gen_canonicalized_resource_params_str() {
+		gen_canonicalized_resource_params_map();
+        
+        canonicalized_amz_params_str = "";
+        
+        for (Map.Entry<String, String> entry : response_params.entrySet()) {
+        	canonicalized_amz_params_str += (entry.getKey() + "=" + entry.getValue() + "&");
+        }
+        
+        if (!canonicalized_amz_params_str.isEmpty()) {
+        	canonicalized_amz_params_str = canonicalized_amz_params_str.substring(0, canonicalized_amz_params_str.length() - 1);
+        }
+    }
+	
 	private void gen_url_text() {
         url_text = "http://";
  
@@ -448,10 +484,6 @@ public class S3Op {
             canonicalized_amz_headers_str += (entry.getKey() + ":" + entry.getValue() + "\n");
         }
     }
-    
-	private void gen_canonicalized_resource_params_map() {
-		
-	}
 	
 	private void gen_signature_str() {
         //gen_canonicalized_amz_headers_str();
@@ -487,7 +519,14 @@ public class S3Op {
     		request_uri = request_uri.substring(0, pos);
     	}
     	
-        signature_str += request_uri;
+    	String tmp_request_uri;
+    	if (has_subresource) {
+    		tmp_request_uri = request_uri + "&" + canonicalized_amz_params_str;
+    	} else {
+    		tmp_request_uri = request_uri + "?" + canonicalized_amz_params_str;;
+    	}
+        signature_str += tmp_request_uri;
+        System.out.println(signature_str);
     }
     
 	private void gen_authorization() throws InvalidKeyException, UnsupportedEncodingException, ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchAlgorithmException{
