@@ -345,14 +345,13 @@ public class CheckArgs {
     
     public void check_put_object() throws InvalidHeaderException, InvalidOptionException {
         if (parse.getBucket_name().isEmpty() || 
-            !parse.getObject_name().isEmpty() || 
             parse.getFile_path().isEmpty()) {
             throw new InvalidOptionException();
         }
         
         for (Map.Entry<String, String> entry : parse.getHttp_headers().entrySet()) {
             if (!put_object_headers_set.contains(entry.getKey())) {
-                throw new InvalidHeaderException();
+                //throw new InvalidHeaderException();
             }
         }
     }

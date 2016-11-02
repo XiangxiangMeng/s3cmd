@@ -193,6 +193,10 @@ public class S3Op {
     	mime_javascript.add(".js");
     	mime_types_map.put("application/javascript", mime_javascript);
     	
+    	Set<String> mime_xml = new HashSet<>();
+    	mime_xml.add(".xml");
+    	mime_types_map.put("application/xml", mime_xml);
+    	
     	Set<String> mime_mp4 = new HashSet<>();
     	mime_mp4.add(".mp4");
     	mime_types_map.put("video/mp4", mime_mp4);
@@ -272,7 +276,7 @@ public class S3Op {
 			key = entry.getKey();
 			value = entry.getValue();
 			
-			if (key.substring(0, 9).equalsIgnoreCase("response-")) {
+			if (key.length() >=9 && key.substring(0, 9).equalsIgnoreCase("response-")) {
             	response_params.put(key, value);
             }
 		}
@@ -354,15 +358,22 @@ public class S3Op {
     
 	private void open_files() throws IOException {
         String file_path = parse.getFile_path();
-        String path;
+        String full_path;
         File file;
         File[] files;
+        /*boolean file_without_full_path = false;
+        
+        if (!file_path.contains("/")) {
+        	file_without_full_path = true;
+        }*/
         
         if(!file_path.isEmpty()) {
         	LinkedList<String> folderList = new LinkedList<String>();
+        	
         	if (file_path.endsWith("/")) {
         		file_path = file_path.substring(0, file_path.length() - 1);
     		}
+        	
     		folderList.add(file_path); 
     		while (folderList.size() > 0) {
     			file = new File(folderList.peek());
@@ -370,27 +381,34 @@ public class S3Op {
     		    files = file.listFiles();
     		    // file_path is not a dir
     		    if (files == null) {
-    		    	path = file.getAbsolutePath();
-    		    	if (parse.isUpload_static_website()) {
-    		    		files_map.put(path.substring(file_path.lastIndexOf('/') + 1), file);
+    		    	full_path = file.getAbsolutePath();
+    		    	if (!parse.isUpload_static_website()) {
+    		    		String object_key = parse.getObject_name();
+    		    		if (object_key.isEmpty()) {
+    		    			files_map.put(full_path.substring(1), file.getAbsoluteFile());
+    		    		} else {
+    		    			files_map.put(object_key, file.getAbsoluteFile());
+    		    		}
     		    	} else {
-    		    		files_map.put(path.substring(1), file);
+    		    		//files_map.put(file_path, file.getAbsoluteFile());  // for test
+    		    		files_map.put(full_path.substring(full_path.lastIndexOf('/') + 1), file.getAbsoluteFile());
     		    	}
     		    	break;
     		    } else if (!parse.getOp_type().equals("PutObject")) {
     		    	throw new IOException("file path can not be dir!!!");
     		    }
+    		    
     		    for (int i = 0; i < files.length; i++) {
     		    	file = files[i];
     		        if (file.isDirectory()) {
     		            folderList.add(file.getPath());
     		        } else {
     		        	//files_map.put(file.getAbsolutePath().substring(file_path.lastIndexOf('/') + 1), file.getAbsoluteFile());
-    		        	path = file.getAbsolutePath();
+    		        	full_path = file.getAbsolutePath();
     		        	if (parse.isUpload_static_website()) {
-    		        		files_map.put(path.substring(file_path.length() + 1), file.getAbsoluteFile());	// remove the whole path
+    		        		files_map.put(full_path.substring(file_path.length() + 1), file.getAbsoluteFile());	// remove the whole path
     		        	} else {
-    		        		files_map.put(path.substring(1), file.getAbsoluteFile());  // remove the first '/'
+    		        		files_map.put(full_path.substring(1), file.getAbsoluteFile());  // remove the first '/'
     		        	}
     		        }
     		    }
@@ -462,7 +480,7 @@ public class S3Op {
             String value = entry.getValue();
             String new_value;
             
-            if (key.substring(0, 6).equalsIgnoreCase("x-amz-")) {
+            if (key.length() >= 6 && key.substring(0, 6).equalsIgnoreCase("x-amz-")) {
                 if (x_amz_http_headers.containsKey(key)) {
                 	// x-amz-test:aaa, x-amz-test:bbb  ===>  x-amz-test:aaa,bbb
                     new_value = x_amz_http_headers.get(key);
@@ -502,7 +520,8 @@ public class S3Op {
         } else {
             signature_str += "\n";
         }
-        
+
+        //http_date = "Thu, 27 Oct 2016 06:58:11 GMT";
         if (!http_date.isEmpty()) {
             signature_str += (http_date + "\n");
         } else {
@@ -519,14 +538,24 @@ public class S3Op {
     		request_uri = request_uri.substring(0, pos);
     	}
     	
-    	String tmp_request_uri;
-    	if (has_subresource) {
-    		tmp_request_uri = request_uri + "&" + canonicalized_amz_params_str;
+    	String tmp_request_uri = "";
+    	
+    	if (!canonicalized_amz_params_str.isEmpty()) {
+	    	if (has_subresource) {
+	    		tmp_request_uri = request_uri + "&" + canonicalized_amz_params_str;
+	    	} else {
+	    		tmp_request_uri = request_uri + "?" + canonicalized_amz_params_str;;
+	    	}
     	} else {
-    		tmp_request_uri = request_uri + "?" + canonicalized_amz_params_str;;
+    		tmp_request_uri = request_uri;
     	}
+    	
         signature_str += tmp_request_uri;
-        System.out.println(signature_str);
+        
+        //signature_str = "PUT\n\n\nThu, 27 Oct 2016 06:58:11 GMT\nx-amz-meta-backuptime:1477551481\nx-amz-meta-client:eos02\nx-amz-meta-copynum:1\nx-amz-meta-dpaid:NetBackup\nx-amz-meta-dpaversion:NBU_75\nx-amz-meta-flags:1\nx-amz-meta-fragmentnum:1\nx-amz-meta-fulldate:1209600\nx-amz-meta-imagetype:2\nx-amz-meta-instancenum:0\nx-amz-meta-masterserver:eos02\nx-amz-meta-ostdate:1477551481\nx-amz-meta-policy:test-policy\nx-amz-meta-saveas:132\nx-amz-meta-sizebytes:0\nx-amz-meta-status:33\nx-amz-meta-streamnum:0\nx-amz-meta-version:11\n/nbu-test/eos02_1477551481_C1_HDR/IMAGE_PROPERTIES";
+        //signature_str = "PUT\n\n\nThu, 27 Oct 2016 06:58:11 GMT\n/nbu-test/eos02_1477551481_C1_HDR/IMAGE_PROPERTIES";
+
+        //System.out.println(signature_str);
     }
     
 	private void gen_authorization() throws InvalidKeyException, UnsupportedEncodingException, ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchAlgorithmException{
@@ -713,6 +742,7 @@ public class S3Op {
         byte[] rawHmac = getSignature(u8_data.getBytes(), skey.getBytes());
         String base64 = encodeBase64(rawHmac);
 
+        //System.out.println(base64);
         return base64;
     }
 
