@@ -84,7 +84,7 @@ public class S3Op {
     }
 
     public void init() throws NoSuchAlgorithmException, ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, InvalidKeyException  {      
-    	get_op();
+        get_op();
         gen_sub_resource();
         open_files();
         init_mime_types();
@@ -93,133 +93,133 @@ public class S3Op {
     }
 
     private void init_mime_types() {
-    	Set<String> mime_msexcel = new HashSet<>();
-    	mime_msexcel.add(".xls");
-    	mime_msexcel.add(".xla");
-    	mime_types_map.put("application/msexcel", mime_msexcel);
-    	
-    	Set<String> mime_mshelp = new HashSet<>();
-    	mime_mshelp.add(".hlp");
-    	mime_mshelp.add(".chm");
-    	mime_types_map.put("application/mshelp", mime_mshelp);
-    	
-    	Set<String> mime_mspowerpoint = new HashSet<>();
-    	mime_mspowerpoint.add(".ppt");
-    	mime_mspowerpoint.add(".ppz");
-    	mime_mspowerpoint.add(".pps");
-    	mime_mspowerpoint.add(".pot");
-    	mime_types_map.put("application/mspowerpoint", mime_mspowerpoint);
-    	
-    	Set<String> mime_msword = new HashSet<>();
-    	mime_msword.add(".doc");
-    	mime_msword.add(".dot");
-    	mime_types_map.put("application/msword", mime_msword);
-    	
-    	Set<String> mime_pdf = new HashSet<>();
-    	mime_pdf.add(".pdf");
-    	mime_types_map.put("application/pdf", mime_pdf);
-    	
-    	Set<String> mime_rtf = new HashSet<>();
-    	mime_rtf.add(".rtf");
-    	mime_types_map.put("application/rtf", mime_rtf);
-    	
-    	Set<String> mime_php = new HashSet<>();
-    	mime_php.add(".php");
-    	mime_php.add(".phtml");
-    	mime_types_map.put("application/x-httpd-php", mime_php);
-    	
-    	Set<String> mime_flash = new HashSet<>();
-    	mime_flash.add(".swf");
-    	mime_flash.add(".cab");
-    	mime_types_map.put("application/x-shockwave-flash", mime_flash);
-    	
-    	Set<String> mime_zip = new HashSet<>();
-    	mime_zip.add(".zip");
-    	mime_types_map.put("application/zip", mime_zip);
-    	
-    	Set<String> mime_eot = new HashSet<>();
-    	mime_eot.add(".eot");
-    	mime_types_map.put("application/vnd.ms-fontobject", mime_eot);
-    	
-    	Set<String> mime_svg = new HashSet<>();
-    	mime_svg.add(".svg");
-    	mime_svg.add(".svgz");
-    	mime_types_map.put("image/svg+xml", mime_svg);
-    	
-    	Set<String> mime_ttf = new HashSet<>();
-    	mime_ttf.add(".ttc");
-    	mime_ttf.add(".ttf");
-    	mime_types_map.put("application/x-font-ttf", mime_ttf);
-    	
-    	Set<String> mime_woff = new HashSet<>();
-    	mime_woff.add(".woff");
-    	mime_types_map.put("application/font-woff", mime_woff);
-    	
-    	Set<String> mime_auto_basic = new HashSet<>();
-    	mime_auto_basic.add(".au");
-    	mime_auto_basic.add(".snd");
-    	mime_types_map.put("audio/basic", mime_auto_basic);
-    	
-    	Set<String> mime_auto_mpeg = new HashSet<>();
-    	mime_auto_mpeg.add(".mp3");
-    	mime_types_map.put("audio/mpeg", mime_auto_mpeg);
-    	
-    	Set<String> mime_wav = new HashSet<>();
-    	mime_wav.add(".wav");
-    	mime_types_map.put("audio/x-wav", mime_wav);
-    	
-    	Set<String> mime_jpeg = new HashSet<>();
-    	mime_jpeg.add(".jpeg");
-    	mime_jpeg.add(".jpg");
-    	mime_jpeg.add(".jpe");
-    	mime_types_map.put("image/jpeg", mime_jpeg);
-    	
-    	Set<String> mime_png = new HashSet<>();
-    	mime_png.add(".png");
-    	mime_types_map.put("image/png", mime_png);
-    	
-    	Set<String> mime_gif = new HashSet<>();
-    	mime_gif.add(".gif");
-    	mime_types_map.put("image/gif", mime_gif);
-    	
-    	Set<String> mime_text_plain = new HashSet<>();
-    	mime_text_plain.add(".txt");
-    	mime_types_map.put("text/plain", mime_text_plain);
-    	
-    	Set<String> mime_css = new HashSet<>();
-    	mime_css.add(".css");
-    	mime_types_map.put("text/css", mime_css);
-    	
-    	Set<String> mime_json = new HashSet<>();
-    	mime_json.add(".json");
-    	mime_types_map.put("application/json", mime_json);
-    	
-    	Set<String> mime_html = new HashSet<>();
-    	mime_html.add(".htm");
-    	mime_html.add(".html");
-    	mime_html.add(".shtml");
-    	mime_types_map.put("text/html", mime_html);
-    	
-    	Set<String> mime_javascript = new HashSet<>();
-    	mime_javascript.add(".js");
-    	mime_types_map.put("application/javascript", mime_javascript);
-    	
-    	Set<String> mime_xml = new HashSet<>();
-    	mime_xml.add(".xml");
-    	mime_types_map.put("application/xml", mime_xml);
-    	
-    	Set<String> mime_mp4 = new HashSet<>();
-    	mime_mp4.add(".mp4");
-    	mime_types_map.put("video/mp4", mime_mp4);
-    	
-    	Set<String> mime_ogv = new HashSet<>();
-    	mime_ogv.add(".ogv");
-    	mime_types_map.put("video/ogg", mime_ogv);
-    	
-    	Set<String> mime_webm = new HashSet<>();
-    	mime_webm.add(".webm");
-    	mime_types_map.put("video/webm", mime_webm);
-	}
+        Set<String> mime_msexcel = new HashSet<>();
+        mime_msexcel.add(".xls");
+        mime_msexcel.add(".xla");
+        mime_types_map.put("application/msexcel", mime_msexcel);
+
+        Set<String> mime_mshelp = new HashSet<>();
+        mime_mshelp.add(".hlp");
+        mime_mshelp.add(".chm");
+        mime_types_map.put("application/mshelp", mime_mshelp);
+
+        Set<String> mime_mspowerpoint = new HashSet<>();
+        mime_mspowerpoint.add(".ppt");
+        mime_mspowerpoint.add(".ppz");
+        mime_mspowerpoint.add(".pps");
+        mime_mspowerpoint.add(".pot");
+        mime_types_map.put("application/mspowerpoint", mime_mspowerpoint);
+
+        Set<String> mime_msword = new HashSet<>();
+        mime_msword.add(".doc");
+        mime_msword.add(".dot");
+        mime_types_map.put("application/msword", mime_msword);
+
+        Set<String> mime_pdf = new HashSet<>();
+        mime_pdf.add(".pdf");
+        mime_types_map.put("application/pdf", mime_pdf);
+
+        Set<String> mime_rtf = new HashSet<>();
+        mime_rtf.add(".rtf");
+        mime_types_map.put("application/rtf", mime_rtf);
+
+        Set<String> mime_php = new HashSet<>();
+        mime_php.add(".php");
+        mime_php.add(".phtml");
+        mime_types_map.put("application/x-httpd-php", mime_php);
+
+        Set<String> mime_flash = new HashSet<>();
+        mime_flash.add(".swf");
+        mime_flash.add(".cab");
+        mime_types_map.put("application/x-shockwave-flash", mime_flash);
+
+        Set<String> mime_zip = new HashSet<>();
+        mime_zip.add(".zip");
+        mime_types_map.put("application/zip", mime_zip);
+
+        Set<String> mime_eot = new HashSet<>();
+        mime_eot.add(".eot");
+        mime_types_map.put("application/vnd.ms-fontobject", mime_eot);
+
+        Set<String> mime_svg = new HashSet<>();
+        mime_svg.add(".svg");
+        mime_svg.add(".svgz");
+        mime_types_map.put("image/svg+xml", mime_svg);
+
+        Set<String> mime_ttf = new HashSet<>();
+        mime_ttf.add(".ttc");
+        mime_ttf.add(".ttf");
+        mime_types_map.put("application/x-font-ttf", mime_ttf);
+
+        Set<String> mime_woff = new HashSet<>();
+        mime_woff.add(".woff");
+        mime_types_map.put("application/font-woff", mime_woff);
+
+        Set<String> mime_auto_basic = new HashSet<>();
+        mime_auto_basic.add(".au");
+        mime_auto_basic.add(".snd");
+        mime_types_map.put("audio/basic", mime_auto_basic);
+
+        Set<String> mime_auto_mpeg = new HashSet<>();
+        mime_auto_mpeg.add(".mp3");
+        mime_types_map.put("audio/mpeg", mime_auto_mpeg);
+
+        Set<String> mime_wav = new HashSet<>();
+        mime_wav.add(".wav");
+        mime_types_map.put("audio/x-wav", mime_wav);
+
+        Set<String> mime_jpeg = new HashSet<>();
+        mime_jpeg.add(".jpeg");
+        mime_jpeg.add(".jpg");
+        mime_jpeg.add(".jpe");
+        mime_types_map.put("image/jpeg", mime_jpeg);
+
+        Set<String> mime_png = new HashSet<>();
+        mime_png.add(".png");
+        mime_types_map.put("image/png", mime_png);
+
+        Set<String> mime_gif = new HashSet<>();
+        mime_gif.add(".gif");
+        mime_types_map.put("image/gif", mime_gif);
+
+        Set<String> mime_text_plain = new HashSet<>();
+        mime_text_plain.add(".txt");
+        mime_types_map.put("text/plain", mime_text_plain);
+
+        Set<String> mime_css = new HashSet<>();
+        mime_css.add(".css");
+        mime_types_map.put("text/css", mime_css);
+
+        Set<String> mime_json = new HashSet<>();
+        mime_json.add(".json");
+        mime_types_map.put("application/json", mime_json);
+
+        Set<String> mime_html = new HashSet<>();
+        mime_html.add(".htm");
+        mime_html.add(".html");
+        mime_html.add(".shtml");
+        mime_types_map.put("text/html", mime_html);
+
+        Set<String> mime_javascript = new HashSet<>();
+        mime_javascript.add(".js");
+        mime_types_map.put("application/javascript", mime_javascript);
+
+        Set<String> mime_xml = new HashSet<>();
+        mime_xml.add(".xml");
+        mime_types_map.put("application/xml", mime_xml);
+
+        Set<String> mime_mp4 = new HashSet<>();
+        mime_mp4.add(".mp4");
+        mime_types_map.put("video/mp4", mime_mp4);
+
+        Set<String> mime_ogv = new HashSet<>();
+        mime_ogv.add(".ogv");
+        mime_types_map.put("video/ogg", mime_ogv);
+
+        Set<String> mime_webm = new HashSet<>();
+        mime_webm.add(".webm");
+        mime_types_map.put("video/webm", mime_webm);
+    }
 
 	private void gen_sub_resource() {
         sub_resource = "";
@@ -234,57 +234,57 @@ public class S3Op {
                    op_type.equalsIgnoreCase("GetObjectacl")) {
             sub_resource = "acl";
             if (!parse.getVersion_id().isEmpty()) {
-            	sub_resource += ("&versionId=" + parse.getVersion_id());
+                sub_resource += ("&versionId=" + parse.getVersion_id());
             }
-        } else if (op_type.equalsIgnoreCase("PutBucketversioning") ||
+        } else if (op_type.equalsIgnoreCase("PutBucketversioning") || 
                    op_type.equalsIgnoreCase("GetBucketversioning")) {
             sub_resource = "versioning";
         } else if (op_type.equalsIgnoreCase("GetBucketObjectversions")) {
             sub_resource = "versions";
         } else if (op_type.equalsIgnoreCase("DeleteMultipleObjects")) {
             sub_resource = "delete";
-        } else if (op_type.equalsIgnoreCase("InitiateMultipartUpload") ||
-        		   op_type.equalsIgnoreCase("ListMultipartUploads")) {
+        } else if (op_type.equalsIgnoreCase("InitiateMultipartUpload")
+                || op_type.equalsIgnoreCase("ListMultipartUploads")) {
             sub_resource = "uploads";
-        } else if (op_type.equalsIgnoreCase("PutBucketwebsite") ||
-        		   op_type.equalsIgnoreCase("GetBucketwebsite") ||
-        		   op_type.equalsIgnoreCase("DeleteBucketwebsite")) {
-        	sub_resource = "website";
+        } else if (op_type.equalsIgnoreCase("PutBucketwebsite") || 
+                   op_type.equalsIgnoreCase("GetBucketwebsite") || 
+                   op_type.equalsIgnoreCase("DeleteBucketwebsite")) {
+            sub_resource = "website";
         } else if (op_type.equalsIgnoreCase("UploadPart")) {
-        	sub_resource += ("partNumber=" + part_id);
-        	sub_resource += ("&uploadId=" + parse.getUpload_id());
-        } else if (op_type.equalsIgnoreCase("CompleteMultipartUpload") ||
-     		   	   op_type.equalsIgnoreCase("AbortMultipartUpload") ||
-     		       op_type.equalsIgnoreCase("ListParts")) {
-	     	sub_resource += ("uploadId=" + parse.getUpload_id());
-		} else if (op_type.equalsIgnoreCase("DeleteObject") ||
-			   	   op_type.equalsIgnoreCase("GetObject") ||
-			   	   op_type.equalsIgnoreCase("HeadObject")) {
-			if (!parse.getVersion_id().isEmpty()) {
-            	sub_resource += ("versionId=" + parse.getVersion_id());
+            sub_resource += ("partNumber=" + part_id);
+            sub_resource += ("&uploadId=" + parse.getUpload_id());
+        } else if (op_type.equalsIgnoreCase("CompleteMultipartUpload") || 
+                   op_type.equalsIgnoreCase("AbortMultipartUpload") || 
+                   op_type.equalsIgnoreCase("ListParts")) {
+            sub_resource += ("uploadId=" + parse.getUpload_id());
+        } else if (op_type.equalsIgnoreCase("DeleteObject") || 
+                   op_type.equalsIgnoreCase("GetObject") || 
+                   op_type.equalsIgnoreCase("HeadObject")) {
+            if (!parse.getVersion_id().isEmpty()) {
+                sub_resource += ("versionId=" + parse.getVersion_id());
             }
-		}
+        }
     }
     
     /* generate the format of below:
-     * 		/
-     * 		/Bucket/      // this format used for calc signature
-     * 		/Bucket/?acl  // this format used for calc signature in virtual-hosted-style, otherwise you should use /Bucket?acl
-     * 		/Bucket/object
-     * 		/Bucket/object?acl
+     *      /
+     *      /Bucket/      // this format used for calc signature
+     *      /Bucket/?acl  // this format used for calc signature in virtual-hosted-style, otherwise you should use /Bucket?acl
+     *      /Bucket/object
+     *      /Bucket/object?acl
      * */
-	private void gen_request_uri(String filename) {
+    private void gen_request_uri(String filename) {
         request_uri = "/";
-        
+
         if (!parse.getBucket_name().isEmpty()) {
             request_uri += parse.getBucket_name();
             if (filename.isEmpty()) {
                 request_uri += "/";
             }
         } else {
-        	return;
+            return;
         }
-    	
+
         if (!filename.isEmpty()) {
             request_uri += ("/" + filename);
         }
@@ -295,63 +295,64 @@ public class S3Op {
         }
     }
 
-	private void gen_canonicalized_resource_params_map() {
-		Map<String, String> http_param_map = parse.getHttp_params();
-		Iterator<Entry<String, String>> entries = http_param_map.entrySet().iterator(); 
-		String key;
-		String value;
-		
-		while (entries.hasNext()) {
-			Map.Entry<String, String> entry = entries.next();
-			key = entry.getKey();
-			value = entry.getValue();
-			
-			if (key.length() >=9 && key.substring(0, 9).equalsIgnoreCase("response-")) {
-            	response_params.put(key, value);
+    private void gen_canonicalized_resource_params_map() {
+        Map<String, String> http_param_map = parse.getHttp_params();
+        Iterator<Entry<String, String>> entries = http_param_map.entrySet().iterator();
+        String key;
+        String value;
+
+        while (entries.hasNext()) {
+            Map.Entry<String, String> entry = entries.next();
+            key = entry.getKey();
+            value = entry.getValue();
+
+            if (key.length() >= 9 && key.substring(0, 9).equalsIgnoreCase("response-")) {
+                response_params.put(key, value);
             }
-		}
-	}
-	
-	private void gen_canonicalized_resource_params_str() {
-		gen_canonicalized_resource_params_map();
-        
-        canonicalized_amz_params_str = "";
-        
-        for (Map.Entry<String, String> entry : response_params.entrySet()) {
-        	canonicalized_amz_params_str += (entry.getKey() + "=" + entry.getValue() + "&");
-        }
-        
-        if (!canonicalized_amz_params_str.isEmpty()) {
-        	canonicalized_amz_params_str = canonicalized_amz_params_str.substring(0, canonicalized_amz_params_str.length() - 1);
         }
     }
-	
-	private void gen_url_text() {
+
+    private void gen_canonicalized_resource_params_str() {
+        gen_canonicalized_resource_params_map();
+
+        canonicalized_amz_params_str = "";
+
+        for (Map.Entry<String, String> entry : response_params.entrySet()) {
+            canonicalized_amz_params_str += (entry.getKey() + "=" + entry.getValue() + "&");
+        }
+
+        if (!canonicalized_amz_params_str.isEmpty()) {
+            canonicalized_amz_params_str = canonicalized_amz_params_str.substring(0,
+                    canonicalized_amz_params_str.length() - 1);
+        }
+    }
+
+    private void gen_url_text() {
         url_text = "http://";
- 
-    	int pos = request_uri.indexOf('/', 1);
-    	if (pos > 0) {
-    		if (parse.isVirtual_hosted_style()) {
-    			String vt_request_uri = request_uri.substring(pos);   // remove the bucket part from request_uri
-        		pos =  vt_request_uri.indexOf('?');
-        		if (pos == 1) {
-        			vt_request_uri = vt_request_uri.substring(pos);   // transfer "/?acl" to "?acl"
-        		}
-        		url_text += (parse.getBucket_name() + "." + parse.getHost() + vt_request_uri);
-    		} else {
-    			String bucket_str = request_uri.substring(0, pos);
-    			String tmp_str = request_uri.substring(pos);
-    			pos =  tmp_str.indexOf('?');
-        		if (pos == 1) {
-        			tmp_str = tmp_str.substring(pos);   // transfer "/?acl" to "?acl"
-        		}
-        		request_uri =  bucket_str + tmp_str;
-    			url_text += (parse.getHost() + request_uri);
-    		}
-    	} else {
-    		url_text += (parse.getHost() + "/");
-    		return;    // GetService
-    	}
+
+        int pos = request_uri.indexOf('/', 1);
+        if (pos > 0) {
+            if (parse.isVirtual_hosted_style()) {
+                String vt_request_uri = request_uri.substring(pos);   // remove the bucket part from request_uri
+                pos = vt_request_uri.indexOf('?');
+                if (pos == 1) {
+                    vt_request_uri = vt_request_uri.substring(pos);   // transfer "/?acl" to "?acl"
+                }
+                url_text += (parse.getBucket_name() + "." + parse.getHost() + vt_request_uri);
+            } else {
+                String bucket_str = request_uri.substring(0, pos);
+                String tmp_str = request_uri.substring(pos);
+                pos = tmp_str.indexOf('?');
+                if (pos == 1) {
+                    tmp_str = tmp_str.substring(pos);   // transfer "/?acl" to "?acl"
+                }
+                request_uri = bucket_str + tmp_str;
+                url_text += (parse.getHost() + request_uri);
+            }
+        } else {
+            url_text += (parse.getHost() + "/");
+            return; // GetService
+        }
                 
         if (!parse.getHttp_params().isEmpty()) {
             if (!has_subresource) {
@@ -373,7 +374,7 @@ public class S3Op {
         System.out.println(url_text);
     }
     
-	private void open_files() throws IOException {
+    private void open_files() throws IOException {
         String file_path = parse.getFile_path();
         String full_path;
         File file;
@@ -384,65 +385,65 @@ public class S3Op {
         	file_without_full_path = true;
         }*/
         
-        if(!file_path.isEmpty()) {
-        	LinkedList<String> folderList = new LinkedList<String>();
-        	
-        	if (file_path.endsWith("/")) {
-        		file_path = file_path.substring(0, file_path.length() - 1);
-    		}
-        	
-    		folderList.add(file_path); 
-    		while (folderList.size() > 0) {
-    			file = new File(folderList.peek());
-    		    folderList.removeFirst();
-    		    files = file.listFiles();
-    		    // file_path is not a dir
-    		    if (files == null) {
-    		    	full_path = file.getAbsolutePath();
-    		    	if (!parse.isUpload_static_website()) {
-    		    		String object_key = parse.getObject_name();
-    		    		if (object_key.isEmpty()) {
-    		    			files_map.put(full_path.substring(1), file.getAbsoluteFile());
-    		    		} else {
-    		    			files_map.put(object_key, file.getAbsoluteFile());
-    		    		}
-    		    	} else {
-    		    		//files_map.put(file_path, file.getAbsoluteFile());  // for test
-    		    		files_map.put(full_path.substring(full_path.lastIndexOf('/') + 1), file.getAbsoluteFile());
-    		    	}
-    		    	break;
-    		    } else if (!parse.getOp_type().equals("PutObject")) {
-    		    	throw new IOException("file path can not be dir!!!");
-    		    }
-    		    
-    		    for (int i = 0; i < files.length; i++) {
-    		    	file = files[i];
-    		        if (file.isDirectory()) {
-    		            folderList.add(file.getPath());
-    		        } else {
-    		        	//files_map.put(file.getAbsolutePath().substring(file_path.lastIndexOf('/') + 1), file.getAbsoluteFile());
-    		        	full_path = file.getAbsolutePath();
-    		        	if (parse.isUpload_static_website()) {
-    		        		files_map.put(full_path.substring(file_path.length() + 1), file.getAbsoluteFile());	// remove the whole path
-    		        	} else {
-    		        		files_map.put(full_path.substring(1), file.getAbsoluteFile());  // remove the first '/'
-    		        	}
-    		        }
-    		    }
-    		}
+        if (!file_path.isEmpty()) {
+            LinkedList<String> folderList = new LinkedList<String>();
+
+            if (file_path.endsWith("/")) {
+                file_path = file_path.substring(0, file_path.length() - 1);
+            }
+
+            folderList.add(file_path);
+            while (folderList.size() > 0) {
+                file = new File(folderList.peek());
+                folderList.removeFirst();
+                files = file.listFiles();
+                // file_path is not a dir
+                if (files == null) {
+                    full_path = file.getAbsolutePath();
+                    if (!parse.isUpload_static_website()) {
+                        String object_key = parse.getObject_name();
+                        if (object_key.isEmpty()) {
+                            files_map.put(full_path.substring(1), file.getAbsoluteFile());
+                        } else {
+                            files_map.put(object_key, file.getAbsoluteFile());
+                        }
+                    } else {
+                        //files_map.put(file_path, file.getAbsoluteFile());  // for test
+                        files_map.put(full_path.substring(full_path.lastIndexOf('/') + 1), file.getAbsoluteFile());
+                    }
+                    break;
+                } else if (!parse.getOp_type().equals("PutObject")) {
+                    throw new IOException("file path can not be dir!!!");
+                }
+
+                for (int i = 0; i < files.length; i++) {
+                    file = files[i];
+                    if (file.isDirectory()) {
+                        folderList.add(file.getPath());
+                    } else {
+                        //files_map.put(file.getAbsolutePath().substring(file_path.lastIndexOf('/') + 1), file.getAbsoluteFile());
+                        full_path = file.getAbsolutePath();
+                        if (parse.isUpload_static_website()) {
+                            files_map.put(full_path.substring(file_path.length() + 1), file.getAbsoluteFile());	// remove the whole path
+                        } else {
+                            files_map.put(full_path.substring(1), file.getAbsoluteFile());  // remove the first '/'
+                        }
+                    }
+                }
+            }
         } else {
-        	// In order to make files_map general
-        	files_map.put("", null);
+            // In order to make files_map general
+            files_map.put("", null);
         }
     }
     
-	private void gen_md5(File file) throws NoSuchAlgorithmException, ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException {
-    	if (parse.isUse_md5() && file != null && file.canRead()) {
+    private void gen_md5(File file) throws NoSuchAlgorithmException, ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException {
+        if (parse.isUse_md5() && file != null && file.canRead()) {
             http_MD5 = getFileMD5(file);
         }
     }
     
-	private void get_op() {
+    private void get_op() {
         String op = parse.getOp_type();
         if (op.equalsIgnoreCase("GetService") ||
             op.equalsIgnoreCase("GetBucket") ||
@@ -457,14 +458,14 @@ public class S3Op {
             op.equalsIgnoreCase("ListParts")) {
             op_type = "GET";
         } else if (op.equalsIgnoreCase("PutBucket") ||
-        		   op.equalsIgnoreCase("PutBucketacl") ||
-        		   op.equalsIgnoreCase("PutBucketlifecycle") ||
-        		   op.equalsIgnoreCase("PutBucketwebsite") ||
-        		   op.equalsIgnoreCase("PutBucketversioning") ||
-        		   op.equalsIgnoreCase("PutObject") ||
-        		   op.equalsIgnoreCase("PutObjectacl") ||
-        		   op.equalsIgnoreCase("PutObjectCopy") ||
-        		   op.equalsIgnoreCase("UploadPart")) {
+                   op.equalsIgnoreCase("PutBucketacl") ||
+                   op.equalsIgnoreCase("PutBucketlifecycle") ||
+                   op.equalsIgnoreCase("PutBucketwebsite") ||
+                   op.equalsIgnoreCase("PutBucketversioning") ||
+                   op.equalsIgnoreCase("PutObject") ||
+                   op.equalsIgnoreCase("PutObjectacl") ||
+                   op.equalsIgnoreCase("PutObjectCopy") ||
+                   op.equalsIgnoreCase("UploadPart")) {
             op_type = "PUT";
         } else if (op.equalsIgnoreCase("HeadBucket") ||
                    op.equalsIgnoreCase("HeadObject")) {
@@ -476,13 +477,13 @@ public class S3Op {
                    op.equalsIgnoreCase("AbortMultipartUpload")) {
             op_type = "DELETE";
         } else if (op.equalsIgnoreCase("DeleteMultipleObjects") ||
-        		   op.equalsIgnoreCase("InitiateMultipartUpload") ||
-        		   op.equalsIgnoreCase("CompleteMultipartUpload")) {
+                   op.equalsIgnoreCase("InitiateMultipartUpload") ||
+                   op.equalsIgnoreCase("CompleteMultipartUpload")) {
             op_type = "POST";
         }
     }
     
-	private boolean has_content_type() {
+    private boolean has_content_type() {
         for (Map.Entry<String, String> entry : parse.getHttp_headers().entrySet()) {
             if (entry.getKey().equalsIgnoreCase("Content-Type")) {
                 http_content_type = entry.getValue();
@@ -493,11 +494,11 @@ public class S3Op {
         return false;
     }
     
-	private void gen_date() {
+    private void gen_date() {
         http_date = getGMTTime();
     }
     
-	private void gen_canonicalized_amz_headers_map() {
+    private void gen_canonicalized_amz_headers_map() {
         for (Map.Entry<String, String> entry : parse.getHttp_headers().entrySet()) {
             String key = entry.getKey().toLowerCase();
             String value = entry.getValue();
@@ -505,7 +506,7 @@ public class S3Op {
             
             if (key.length() >= 6 && key.substring(0, 6).equalsIgnoreCase("x-amz-")) {
                 if (x_amz_http_headers.containsKey(key)) {
-                	// x-amz-test:aaa, x-amz-test:bbb  ===>  x-amz-test:aaa,bbb
+                    // x-amz-test:aaa, x-amz-test:bbb  ===>  x-amz-test:aaa,bbb
                     new_value = x_amz_http_headers.get(key);
                     new_value += ("," + value);
                     x_amz_http_headers.put(key, new_value);
@@ -516,7 +517,7 @@ public class S3Op {
         }
     }
     
-	private void gen_canonicalized_amz_headers_str() {
+    private void gen_canonicalized_amz_headers_str() {
         gen_canonicalized_amz_headers_map();
         
         canonicalized_amz_headers_str = "";
@@ -525,8 +526,8 @@ public class S3Op {
             canonicalized_amz_headers_str += (entry.getKey() + ":" + entry.getValue() + "\n");
         }
     }
-	
-	private void gen_signature_str() {
+    
+    private void gen_signature_str() {
         //gen_canonicalized_amz_headers_str();
         signature_str = "";
         
@@ -557,28 +558,28 @@ public class S3Op {
         
         // for /bucket/, amazon need the last /, but it should be /bucket in ceph
         int pos = request_uri.lastIndexOf("/", 1);
-    	if (pos > 0) {
-    		request_uri = request_uri.substring(0, pos);
-    	}
-    	
-    	String tmp_request_uri = "";
-    	
-    	if (!canonicalized_amz_params_str.isEmpty()) {
-	    	if (has_subresource) {
-	    		tmp_request_uri = request_uri + "&" + canonicalized_amz_params_str;
-	    	} else {
-	    		tmp_request_uri = request_uri + "?" + canonicalized_amz_params_str;;
-	    	}
-    	} else {
-    		tmp_request_uri = request_uri;
-    	}
-    	
+        if (pos > 0) {
+            request_uri = request_uri.substring(0, pos);
+        }
+
+        String tmp_request_uri = "";
+
+        if (!canonicalized_amz_params_str.isEmpty()) {
+            if (has_subresource) {
+                tmp_request_uri = request_uri + "&" + canonicalized_amz_params_str;
+            } else {
+                tmp_request_uri = request_uri + "?" + canonicalized_amz_params_str;
+            }
+        } else {
+            tmp_request_uri = request_uri;
+        }
+
         signature_str += tmp_request_uri;
 
         System.out.println(signature_str);
     }
     
-	private void gen_authorization() throws InvalidKeyException, UnsupportedEncodingException, ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchAlgorithmException{
+    private void gen_authorization() throws InvalidKeyException, UnsupportedEncodingException, ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchAlgorithmException{
         if (parse.isAnonymous()) {
             return;
         }
@@ -586,13 +587,13 @@ public class S3Op {
         http_authorization = "AWS " + parse.getAccess_key() + ":" + getSignature(parse.getSecret_key(), signature_str);
     }
     
-	private void gen_http_request() throws URISyntaxException {
-    	if (http_request != null) {
-    		http_request.reset();
-    		http_request.setURI(new URI(url_text));
-    		return;
-    	}
-    	
+    private void gen_http_request() throws URISyntaxException {
+        if (http_request != null) {
+            http_request.reset();
+            http_request.setURI(new URI(url_text));
+            return;
+        }
+
         if (op_type.equals("GET")) {
             http_request = new HttpGet(url_text);
         } else if (op_type.equals("PUT")) {
@@ -606,12 +607,12 @@ public class S3Op {
         } 
     }
     
-	private void process_http_headers_and_body(File file) throws IOException {
+    private void process_http_headers_and_body(File file) throws IOException {
         if (parse.isVirtual_hosted_style()) {
-        	String bucket = parse.getBucket_name();
-        	if (!bucket.isEmpty()) {
-        		bucket += ".";
-        	}
+            String bucket = parse.getBucket_name();
+            if (!bucket.isEmpty()) {
+                bucket += ".";
+            }
             http_request.setHeader("Host", bucket + parse.getHost());
         }
         
@@ -637,8 +638,8 @@ public class S3Op {
         
         if (file != null) {
             //HttpEntity reqEntity = new FileEntity(file);
-        	HttpEntity reqEntity = GetHttpEntity(file, part_num, part_id, part_size);
-        	
+            HttpEntity reqEntity = GetHttpEntity(file, part_num, part_id, part_size);
+        
             if (op_type.equals("PUT")) {
                 ((HttpPut) http_request).setEntity(reqEntity);
             } else if (op_type.equals("POST")) {
@@ -647,150 +648,150 @@ public class S3Op {
         }
     }
     private HttpEntity GetHttpEntity(File file, int part_num, int part_id, long part_size) throws IOException {
-    	long file_size = file.length();
-    	long buffer_size = 0;
-    	long offset = 0;
-    	
-    	if (!parse.getOp_type().equals("UploadPart")) {
-    		return new FileEntity(file);
-    	}
-    	
-    	if (part_id > file_size) {
-    		System.out.println("Part id is greater than the file size!");
-    		return null;
-    	}
-    	
-    	FileInputStream fStream = new FileInputStream(file);
-    	
-    	long result[] = get_buffer_size_and_offset(file_size);
-    	buffer_size = result[0];
-    	offset = result[1];
-    	
-    	System.out.println("filesize: " + file_size + ", offset: " + offset + ", buffer_size: " + buffer_size);
-    	
-    	byte[] buffer = new byte[(int) buffer_size];
-    	
-    	fStream.skip(offset);
-    	fStream.read(buffer, 0, (int)buffer_size);
-    	
-    	ByteArrayEntity entity = new ByteArrayEntity(buffer);
-    	
-    	fStream.close();
-    	
-    	return entity;
+        long file_size = file.length();
+        long buffer_size = 0;
+        long offset = 0;
+
+        if (!parse.getOp_type().equals("UploadPart")) {
+            return new FileEntity(file);
+        }
+
+        if (part_id > file_size) {
+            System.out.println("Part id is greater than the file size!");
+            return null;
+        }
+
+        FileInputStream fStream = new FileInputStream(file);
+
+        long result[] = get_buffer_size_and_offset(file_size);
+        buffer_size = result[0];
+        offset = result[1];
+
+        System.out.println("filesize: " + file_size + ", offset: " + offset + ", buffer_size: " + buffer_size);
+
+        byte[] buffer = new byte[(int) buffer_size];
+
+        fStream.skip(offset);
+        fStream.read(buffer, 0, (int) buffer_size);
+
+        ByteArrayEntity entity = new ByteArrayEntity(buffer);
+
+        fStream.close();
+
+        return entity;
     }
     
     /* ****************************
      * index: 0 - buffer size
-     * 		  1 - offset
+     *        1 - offset
      * ****************************/
     private long[] get_buffer_size_and_offset(long file_size) {
-    	long last_part_size = 0;
-    	long calc_part_size = 0;
-    	long part_size_arr[] = new long[2];
-    	
-    	if (part_size > 0) {
-    		if (part_id == part_num) {
-    			part_size_arr[0] = this.last_part_size;
-        		part_size_arr[1] = file_size - this.last_part_size;
-    		} else {
-    			part_size_arr[0] = part_size;
-        		part_size_arr[1] = part_size * (part_id - 1);
-    		}
+        long last_part_size = 0;
+        long calc_part_size = 0;
+        long part_size_arr[] = new long[2];
 
-    		return part_size_arr;
-    	}
-    	
-    	if (file_size % part_num == 0) {
-    		calc_part_size = file_size / part_num;
-    		part_size_arr[0] = calc_part_size;
-    		part_size_arr[1] = calc_part_size * (part_id - 1);
-    		return part_size_arr;
-    	}
-    	
-    	long step = 0;
-    	long tmp_size = file_size;
-    	
-    	do {
-    		++tmp_size;
-    		++step;
-    	} while (tmp_size % part_num != 0);
-    	
-    	calc_part_size = tmp_size / part_num;
-    	last_part_size = calc_part_size - step;
-    	
-    	if (part_id == part_num) {
-    		part_size_arr[0] = last_part_size;
-    		part_size_arr[1] = file_size - last_part_size;
-    	} else {
-    		part_size_arr[0] = calc_part_size;
-    		part_size_arr[1] = calc_part_size * (part_id - 1);
-    	}
-		
-		return part_size_arr;
+        if (part_size > 0) {
+            if (part_id == part_num) {
+                part_size_arr[0] = this.last_part_size;
+                part_size_arr[1] = file_size - this.last_part_size;
+            } else {
+                part_size_arr[0] = part_size;
+                part_size_arr[1] = part_size * (part_id - 1);
+            }
+
+            return part_size_arr;
+        }
+
+        if (file_size % part_num == 0) {
+            calc_part_size = file_size / part_num;
+            part_size_arr[0] = calc_part_size;
+            part_size_arr[1] = calc_part_size * (part_id - 1);
+            return part_size_arr;
+        }
+
+        long step = 0;
+        long tmp_size = file_size;
+
+        do {
+            ++tmp_size;
+            ++step;
+        } while (tmp_size % part_num != 0);
+
+        calc_part_size = tmp_size / part_num;
+        last_part_size = calc_part_size - step;
+
+        if (part_id == part_num) {
+            part_size_arr[0] = last_part_size;
+            part_size_arr[1] = file_size - last_part_size;
+        } else {
+            part_size_arr[0] = calc_part_size;
+            part_size_arr[1] = calc_part_size * (part_id - 1);
+        }
+
+        return part_size_arr;
     }
     
     private String re_get_object_key(String object_key) {
-    	
-    	// PutObjectacl with xml (object is not null and file is not null)
-    	if (!parse.getObject_name().isEmpty() && !object_key.isEmpty()) {
-    		object_key = parse.getObject_name();
-    	} else {
-    		String op = parse.getOp_type();
-    		
-    		if (op.equals("PutBucketacl") ||
-    			op.equals("PutBucketversioning") ||
-    			op.equals("PutBucketwebsite") ||
-    			op.equals("PutBucketlifecycle") ||
-    			op.equals("DeleteMultipleObjects")) {
-    			// object is null and file is not null
-    			object_key = "";
-    		} else if (op.equals("GetObject") ||
-        			   op.equals("HeadObject") ||
-        			   op.equals("DeleteObject") ||
-        			   op.equals("GetObjectacl") ||
-        			   op.equals("PutObjectacl") ||		//PutObjectacl with HTTP Header
-        			   op.equals("PutObjectCopy") ||
-        			   op.equals("InitiateMultipartUpload") ||
-        			   op.equals("UploadPart") ||
-        			   op.equals("CompleteMultipartUpload") ||
-        			   op.equals("AbortMultipartUpload") ||
-        			   op.equals("ListParts")) {
-    			// object is not null and file is null
-    			object_key = parse.getObject_name();
-    		}
-    	}
-    	
-    	return object_key;
+    
+        // PutObjectacl with xml (object is not null and file is not null)
+        if (!parse.getObject_name().isEmpty() && !object_key.isEmpty()) {
+            object_key = parse.getObject_name();
+        } else {
+            String op = parse.getOp_type();
+    
+            if (op.equals("PutBucketacl") ||
+                op.equals("PutBucketversioning") ||
+                op.equals("PutBucketwebsite") ||
+                op.equals("PutBucketlifecycle") ||
+                op.equals("DeleteMultipleObjects")) {
+                // object is null and file is not null
+                object_key = "";
+            } else if (op.equals("GetObject") ||
+                       op.equals("HeadObject") ||
+                       op.equals("DeleteObject") ||
+                       op.equals("GetObjectacl") ||
+                       op.equals("PutObjectacl") ||		//PutObjectacl with HTTP Header
+                       op.equals("PutObjectCopy") ||
+                       op.equals("InitiateMultipartUpload") ||
+                       op.equals("UploadPart") ||
+                       op.equals("CompleteMultipartUpload") ||
+                       op.equals("AbortMultipartUpload") ||
+                       op.equals("ListParts")) {
+                // object is not null and file is null
+                object_key = parse.getObject_name();
+            }
+        }
+    
+        return object_key;
     }
     
     private void gen_content_type(String file_name)
     {
-    	if (!parse.getOp_type().equals("PutObject") || file_name.isEmpty() || has_content_type()) {
-    		return;
-    	}
-    	
-    	String content_type;
-    	Set<String> mime_set;
-    	String extension;
-    	int pos;
-    	
-    	pos = file_name.lastIndexOf('.');
-    	if (pos == -1) {
-    		return;
-    	}
-    	
-    	extension = file_name.substring(pos);
-    	
-    	for (Map.Entry<String, Set<String>> entry : mime_types_map.entrySet()) {
-    		content_type = entry.getKey();
-    		mime_set = entry.getValue();
-    		
-    		if (mime_set.contains(extension)) {
-    			http_content_type = content_type;
-    			return;
-    		}
-    	}
+        if (!parse.getOp_type().equals("PutObject") || file_name.isEmpty() || has_content_type()) {
+            return;
+        }
+
+        String content_type;
+        Set<String> mime_set;
+        String extension;
+        int pos;
+
+        pos = file_name.lastIndexOf('.');
+        if (pos == -1) {
+            return;
+        }
+
+        extension = file_name.substring(pos);
+
+        for (Map.Entry<String, Set<String>> entry : mime_types_map.entrySet()) {
+            content_type = entry.getKey();
+            mime_set = entry.getValue();
+
+            if (mime_set.contains(extension)) {
+                http_content_type = content_type;
+                return;
+            }
+        }
     }
     
     public void process_request() throws Exception {
@@ -800,94 +801,93 @@ public class S3Op {
         
         
         for (Map.Entry<String, File> entry : files_map.entrySet()) {
-        	object_key = entry.getKey();
-        	file = entry.getValue();
-        	
-        	if (file != null) {
-	        	// for multipart upload
-	        	get_part_info(file.length(), parse.getPart_number(), parse.getPart_id(), parse.getPart_size());
-	        	System.out.println("part_num: " + part_num + ", part_id: " + part_id + ", part_size: " + part_size + ", last_part_size: " + last_part_size);
-        	}
-        	
-        	while (true) {
-	        	object_key = re_get_object_key(object_key);
-	        	
-	        	if (parse.getPart_size() > 0 || 
-	        		(parse.getPart_size() == 0 && parse.getPart_number() > 0)) {
-	        		gen_sub_resource();	// must be called in each cycle
-	        	}
-	            gen_content_type(object_key);
-	        	gen_request_uri(object_key);
-	            gen_url_text();
-	            gen_http_request();
-	            gen_md5(file);
-	            gen_date();
-	            gen_signature_str();
-	            gen_authorization();
-	            
-	            process_http_headers_and_body(file);
-	            
-	            CloseableHttpClient http_client = HttpClients.createDefault();
-	            
-	            CloseableHttpResponse response = http_client.execute(http_request);
-	            
-	            HttpEntity entity = response.getEntity();
-	            
-	            if (entity != null) {
-	                long resp_len = entity.getContentLength();
-	                
-	                if (resp_len > 0) {
-	                	if(parse.getOp_type().equalsIgnoreCase("GetObject")) {
-	                        createFile(parse.getFile_path(), entity);
-	                	} else {
-	                		//System.out.println(EntityUtils.toString(entity));
-	                		xml_parser.parse(parse.getOp_type(), EntityUtils.toString(entity), parse.isIs_format());
-	                	}
-	                }
-	            }
-	            
-	            
-	            /* *************************************************************
-	             * if set part-size, ignore part-num and part-id 
-	             * if no set part-size and no set part-id, upload all parts
-	             * ************************************************************/
-	            if (++part_id > part_num) {
-	            	break;  //while
-	            }
-	            
-	            if (!(parse.getOp_type().equalsIgnoreCase("UploadPart") && 
-	            	  (parse.getPart_size() > 0 || 
-					   (parse.getPart_size() == 0 && 
-					    parse.getPart_number() > 0 && 
-					    parse.getPart_id() == 0)))) {
-	            	break; // while(true)
-	            }
-        	}
+            object_key = entry.getKey();
+            file = entry.getValue();
+        
+            if (file != null) {
+                // for multipart upload
+                get_part_info(file.length(), parse.getPart_number(), parse.getPart_id(), parse.getPart_size());
+                System.out.println("part_num: " + part_num + ", part_id: " + part_id + ", part_size: " + part_size + ", last_part_size: " + last_part_size);
+            }
+        
+            while (true) {
+                object_key = re_get_object_key(object_key);
+
+                if (parse.getPart_size() > 0 || 
+                    (parse.getPart_size() == 0 && parse.getPart_number() > 0)) {
+                    gen_sub_resource();	// must be called in each cycle
+                }
+                gen_content_type(object_key);
+                gen_request_uri(object_key);
+                gen_url_text();
+                gen_http_request();
+                gen_md5(file);
+                gen_date();
+                gen_signature_str();
+                gen_authorization();
+
+                process_http_headers_and_body(file);
+
+                CloseableHttpClient http_client = HttpClients.createDefault();
+
+                CloseableHttpResponse response = http_client.execute(http_request);
+
+                HttpEntity entity = response.getEntity();
+
+                if (entity != null) {
+                    long resp_len = entity.getContentLength();
+
+                    if (resp_len > 0) {
+                        if (parse.getOp_type().equalsIgnoreCase("GetObject")) {
+                            createFile(parse.getFile_path(), entity);
+                        } else {
+                            //System.out.println(EntityUtils.toString(entity));
+                            xml_parser.parse(parse.getOp_type(), EntityUtils.toString(entity), parse.isIs_format());
+                        }
+                    }
+                }
+
+                /* *************************************************************
+                 * if set part-size, ignore part-num and part-id 
+                 * if no set part-size and no set part-id, upload all parts
+                 * ************************************************************/
+                if (++part_id > part_num) {
+                    break;  //while
+                }
+
+                if (!(parse.getOp_type().equalsIgnoreCase("UploadPart") && 
+                      (parse.getPart_size() > 0 || 
+                       (parse.getPart_size() == 0 && 
+                        parse.getPart_number() > 0 && 
+                        parse.getPart_id() == 0)))) {
+                    break; // while(true)
+                }
+            }
         }
     }
 
     private void get_part_info(long file_size, int part_num, int part_id, long part_size) {
-    	if (part_size == 0) {
-    		if (part_id == 0) {
-    			part_id = 1;
-    		}
-    		this.part_num = part_num;
-    		this.part_id = part_id;
-    		
-    		return;
-    	}
-    	
-    	this.part_id = 1;
-    	
-    	if (file_size % part_size == 0) {
-    		this.part_num = (int) (file_size / part_size);
-    		this.part_size = part_size;
-    		this.last_part_size = part_size;
-    	} else {
-    		this.part_num = (int) (file_size / part_size) + 1;
-    		this.part_size = part_size;
-    		this.last_part_size = file_size - part_size * (this.part_num - 1);
-    	}
+        if (part_size == 0) {
+            if (part_id == 0) {
+                part_id = 1;
+            }
+            this.part_num = part_num;
+            this.part_id = part_id;
+
+            return;
+        }
+
+        this.part_id = 1;
+
+        if (file_size % part_size == 0) {
+            this.part_num = (int) (file_size / part_size);
+            this.part_size = part_size;
+            this.last_part_size = part_size;
+        } else {
+            this.part_num = (int) (file_size / part_size) + 1;
+            this.part_size = part_size;
+            this.last_part_size = file_size - part_size * (this.part_num - 1);
+        }
     }
     
     private boolean createFile(String destFileName, HttpEntity entity) {  
@@ -911,9 +911,9 @@ public class S3Op {
         try {  
             if (file.createNewFile()) {  
                 //System.out.println("创建单个文件" + destFileName + "成功！");  
-            	FileOutputStream outputstream = new FileOutputStream(file);
-            	entity.writeTo(outputstream);
-            	
+                FileOutputStream outputstream = new FileOutputStream(file);
+                entity.writeTo(outputstream);
+            
                 return true;  
             } else {  
                 System.out.println("Create file failure!");  
