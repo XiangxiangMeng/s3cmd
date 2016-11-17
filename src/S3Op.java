@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
@@ -32,6 +33,7 @@ import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -47,7 +49,6 @@ public class S3Op {
     private String sub_resource = "";
     private Map<String, File> files_map;
     private ParseArgs parse = null;
-    private boolean has_params = false;
     private boolean has_subresource = false;
     private Map<String, String> x_amz_http_headers = null;
     private Map<String, String> response_params = null;
@@ -64,12 +65,22 @@ public class S3Op {
     /* content type */
     private Map<String, Set<String>> mime_types_map;
     
+    /* multipart upload */
+    int part_num = 0;
+    int part_id = 0;
+    long part_size = 0;
+    long last_part_size = 0;
+    
+    /* XML parser */
+    private XmlParser xml_parser;
+    
     public S3Op(ParseArgs parse) {
         this.parse = parse;
         x_amz_http_headers = new TreeMap<>();
         response_params = new TreeMap<>();
         files_map = new TreeMap<>();
         mime_types_map = new TreeMap<>();
+        xml_parser = new XmlParser();
     }
 
     public void init() throws NoSuchAlgorithmException, ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, InvalidKeyException  {      
@@ -222,6 +233,9 @@ public class S3Op {
                    op_type.equalsIgnoreCase("PutObjectacl") ||
                    op_type.equalsIgnoreCase("GetObjectacl")) {
             sub_resource = "acl";
+            if (!parse.getVersion_id().isEmpty()) {
+            	sub_resource += ("&versionId=" + parse.getVersion_id());
+            }
         } else if (op_type.equalsIgnoreCase("PutBucketversioning") ||
                    op_type.equalsIgnoreCase("GetBucketversioning")) {
             sub_resource = "versioning";
@@ -229,11 +243,27 @@ public class S3Op {
             sub_resource = "versions";
         } else if (op_type.equalsIgnoreCase("DeleteMultipleObjects")) {
             sub_resource = "delete";
+        } else if (op_type.equalsIgnoreCase("InitiateMultipartUpload") ||
+        		   op_type.equalsIgnoreCase("ListMultipartUploads")) {
+            sub_resource = "uploads";
         } else if (op_type.equalsIgnoreCase("PutBucketwebsite") ||
         		   op_type.equalsIgnoreCase("GetBucketwebsite") ||
         		   op_type.equalsIgnoreCase("DeleteBucketwebsite")) {
         	sub_resource = "website";
-        }
+        } else if (op_type.equalsIgnoreCase("UploadPart")) {
+        	sub_resource += ("partNumber=" + part_id);
+        	sub_resource += ("&uploadId=" + parse.getUpload_id());
+        } else if (op_type.equalsIgnoreCase("CompleteMultipartUpload") ||
+     		   	   op_type.equalsIgnoreCase("AbortMultipartUpload") ||
+     		       op_type.equalsIgnoreCase("ListParts")) {
+	     	sub_resource += ("uploadId=" + parse.getUpload_id());
+		} else if (op_type.equalsIgnoreCase("DeleteObject") ||
+			   	   op_type.equalsIgnoreCase("GetObject") ||
+			   	   op_type.equalsIgnoreCase("HeadObject")) {
+			if (!parse.getVersion_id().isEmpty()) {
+            	sub_resource += ("versionId=" + parse.getVersion_id());
+            }
+		}
     }
     
     /* generate the format of below:
@@ -279,10 +309,6 @@ public class S3Op {
 			if (key.length() >=9 && key.substring(0, 9).equalsIgnoreCase("response-")) {
             	response_params.put(key, value);
             }
-		}
-		
-		if (!parse.getVersion_id().isEmpty()) {
-			response_params.put("versionId", parse.getVersion_id());
 		}
 	}
 	
@@ -330,7 +356,6 @@ public class S3Op {
         if (!parse.getHttp_params().isEmpty()) {
             if (!has_subresource) {
                 url_text += "?";
-                has_params = true;
             } else {
                 url_text += "&";
             }
@@ -345,15 +370,7 @@ public class S3Op {
             }
         }
         
-        if (!parse.getVersion_id().isEmpty()) {
-            if (!has_subresource && !has_params) {
-                url_text += "?";
-            } else {
-                url_text += "&";
-            }
-            
-            url_text += ("versionId=" + parse.getVersion_id());
-        }
+        System.out.println(url_text);
     }
     
 	private void open_files() throws IOException {
@@ -435,7 +452,9 @@ public class S3Op {
             op.equalsIgnoreCase("GetBucketversioning") ||
             op.equalsIgnoreCase("GetBucketwebsite") ||
             op.equalsIgnoreCase("GetObject") ||
-            op.equalsIgnoreCase("GetObjectacl")) {
+            op.equalsIgnoreCase("GetObjectacl") ||
+            op.equalsIgnoreCase("ListMultipartUploads") ||
+            op.equalsIgnoreCase("ListParts")) {
             op_type = "GET";
         } else if (op.equalsIgnoreCase("PutBucket") ||
         		   op.equalsIgnoreCase("PutBucketacl") ||
@@ -444,7 +463,8 @@ public class S3Op {
         		   op.equalsIgnoreCase("PutBucketversioning") ||
         		   op.equalsIgnoreCase("PutObject") ||
         		   op.equalsIgnoreCase("PutObjectacl") ||
-        		   op.equalsIgnoreCase("PutObjectCopy")) {
+        		   op.equalsIgnoreCase("PutObjectCopy") ||
+        		   op.equalsIgnoreCase("UploadPart")) {
             op_type = "PUT";
         } else if (op.equalsIgnoreCase("HeadBucket") ||
                    op.equalsIgnoreCase("HeadObject")) {
@@ -452,9 +472,12 @@ public class S3Op {
         } else if (op.equalsIgnoreCase("DeleteBucket") ||
                    op.equalsIgnoreCase("DeleteBucketlifecycle") ||
                    op.equalsIgnoreCase("DeleteBucketwebsite") ||
-                   op.equalsIgnoreCase("DeleteObject")) {
+                   op.equalsIgnoreCase("DeleteObject") ||
+                   op.equalsIgnoreCase("AbortMultipartUpload")) {
             op_type = "DELETE";
-        } else if (op.equalsIgnoreCase("DeleteMultipleObjects")) {
+        } else if (op.equalsIgnoreCase("DeleteMultipleObjects") ||
+        		   op.equalsIgnoreCase("InitiateMultipartUpload") ||
+        		   op.equalsIgnoreCase("CompleteMultipartUpload")) {
             op_type = "POST";
         }
     }
@@ -551,11 +574,8 @@ public class S3Op {
     	}
     	
         signature_str += tmp_request_uri;
-        
-        //signature_str = "PUT\n\n\nThu, 27 Oct 2016 06:58:11 GMT\nx-amz-meta-backuptime:1477551481\nx-amz-meta-client:eos02\nx-amz-meta-copynum:1\nx-amz-meta-dpaid:NetBackup\nx-amz-meta-dpaversion:NBU_75\nx-amz-meta-flags:1\nx-amz-meta-fragmentnum:1\nx-amz-meta-fulldate:1209600\nx-amz-meta-imagetype:2\nx-amz-meta-instancenum:0\nx-amz-meta-masterserver:eos02\nx-amz-meta-ostdate:1477551481\nx-amz-meta-policy:test-policy\nx-amz-meta-saveas:132\nx-amz-meta-sizebytes:0\nx-amz-meta-status:33\nx-amz-meta-streamnum:0\nx-amz-meta-version:11\n/nbu-test/eos02_1477551481_C1_HDR/IMAGE_PROPERTIES";
-        //signature_str = "PUT\n\n\nThu, 27 Oct 2016 06:58:11 GMT\n/nbu-test/eos02_1477551481_C1_HDR/IMAGE_PROPERTIES";
 
-        //System.out.println(signature_str);
+        System.out.println(signature_str);
     }
     
 	private void gen_authorization() throws InvalidKeyException, UnsupportedEncodingException, ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchAlgorithmException{
@@ -586,7 +606,7 @@ public class S3Op {
         } 
     }
     
-	private void process_http_headers_and_body(File file) {
+	private void process_http_headers_and_body(File file) throws IOException {
         if (parse.isVirtual_hosted_style()) {
         	String bucket = parse.getBucket_name();
         	if (!bucket.isEmpty()) {
@@ -615,14 +635,99 @@ public class S3Op {
             http_request.setHeader(entry.getKey(), entry.getValue());
         }
         
-        if (file !=null && file.canRead()) {
-            HttpEntity reqEntity = new FileEntity(file);
+        if (file != null) {
+            //HttpEntity reqEntity = new FileEntity(file);
+        	HttpEntity reqEntity = GetHttpEntity(file, part_num, part_id, part_size);
+        	
             if (op_type.equals("PUT")) {
                 ((HttpPut) http_request).setEntity(reqEntity);
             } else if (op_type.equals("POST")) {
                 ((HttpPost) http_request).setEntity(reqEntity);
             }
         }
+    }
+    private HttpEntity GetHttpEntity(File file, int part_num, int part_id, long part_size) throws IOException {
+    	long file_size = file.length();
+    	long buffer_size = 0;
+    	long offset = 0;
+    	
+    	if (!parse.getOp_type().equals("UploadPart")) {
+    		return new FileEntity(file);
+    	}
+    	
+    	if (part_id > file_size) {
+    		System.out.println("Part id is greater than the file size!");
+    		return null;
+    	}
+    	
+    	FileInputStream fStream = new FileInputStream(file);
+    	
+    	long result[] = get_buffer_size_and_offset(file_size);
+    	buffer_size = result[0];
+    	offset = result[1];
+    	
+    	System.out.println("filesize: " + file_size + ", offset: " + offset + ", buffer_size: " + buffer_size);
+    	
+    	byte[] buffer = new byte[(int) buffer_size];
+    	
+    	fStream.skip(offset);
+    	fStream.read(buffer, 0, (int)buffer_size);
+    	
+    	ByteArrayEntity entity = new ByteArrayEntity(buffer);
+    	
+    	fStream.close();
+    	
+    	return entity;
+    }
+    
+    /* ****************************
+     * index: 0 - buffer size
+     * 		  1 - offset
+     * ****************************/
+    private long[] get_buffer_size_and_offset(long file_size) {
+    	long last_part_size = 0;
+    	long calc_part_size = 0;
+    	long part_size_arr[] = new long[2];
+    	
+    	if (part_size > 0) {
+    		if (part_id == part_num) {
+    			part_size_arr[0] = this.last_part_size;
+        		part_size_arr[1] = file_size - this.last_part_size;
+    		} else {
+    			part_size_arr[0] = part_size;
+        		part_size_arr[1] = part_size * (part_id - 1);
+    		}
+
+    		return part_size_arr;
+    	}
+    	
+    	if (file_size % part_num == 0) {
+    		calc_part_size = file_size / part_num;
+    		part_size_arr[0] = calc_part_size;
+    		part_size_arr[1] = calc_part_size * (part_id - 1);
+    		return part_size_arr;
+    	}
+    	
+    	long step = 0;
+    	long tmp_size = file_size;
+    	
+    	do {
+    		++tmp_size;
+    		++step;
+    	} while (tmp_size % part_num != 0);
+    	
+    	calc_part_size = tmp_size / part_num;
+    	last_part_size = calc_part_size - step;
+    	
+    	if (part_id == part_num) {
+    		part_size_arr[0] = last_part_size;
+    		part_size_arr[1] = file_size - last_part_size;
+    	} else {
+    		part_size_arr[0] = calc_part_size;
+    		part_size_arr[1] = calc_part_size * (part_id - 1);
+    	}
+		
+		return part_size_arr;
     }
     
     private String re_get_object_key(String object_key) {
@@ -645,7 +750,12 @@ public class S3Op {
         			   op.equals("DeleteObject") ||
         			   op.equals("GetObjectacl") ||
         			   op.equals("PutObjectacl") ||		//PutObjectacl with HTTP Header
-        			   op.equals("PutObjectCopy")) {
+        			   op.equals("PutObjectCopy") ||
+        			   op.equals("InitiateMultipartUpload") ||
+        			   op.equals("UploadPart") ||
+        			   op.equals("CompleteMultipartUpload") ||
+        			   op.equals("AbortMultipartUpload") ||
+        			   op.equals("ListParts")) {
     			// object is not null and file is null
     			object_key = parse.getObject_name();
     		}
@@ -686,39 +796,135 @@ public class S3Op {
     public void process_request() throws Exception {
         String object_key;
         File file;
-                
+        
+        
+        
         for (Map.Entry<String, File> entry : files_map.entrySet()) {
         	object_key = entry.getKey();
         	file = entry.getValue();
         	
-        	object_key = re_get_object_key(object_key);
+        	if (file != null) {
+	        	// for multipart upload
+	        	get_part_info(file.length(), parse.getPart_number(), parse.getPart_id(), parse.getPart_size());
+	        	System.out.println("part_num: " + part_num + ", part_id: " + part_id + ", part_size: " + part_size + ", last_part_size: " + last_part_size);
+        	}
         	
-            gen_content_type(object_key);
-        	gen_request_uri(object_key);
-            gen_url_text();
-            gen_http_request();
-            gen_md5(file);
-            gen_date();
-            gen_signature_str();
-            gen_authorization();
-            
-            process_http_headers_and_body(file);
-            
-            CloseableHttpClient http_client = HttpClients.createDefault();
-            
-            CloseableHttpResponse response = http_client.execute(http_request);
-            
-            HttpEntity entity = response.getEntity();
-            
-            if (entity != null) {
-                long resp_len = entity.getContentLength();
-                if (resp_len > 0) {
-                    System.out.println(EntityUtils.toString(entity));
-                }
-            }            
+        	while (true) {
+	        	object_key = re_get_object_key(object_key);
+	        	
+	        	if (parse.getPart_size() > 0 || 
+	        		(parse.getPart_size() == 0 && parse.getPart_number() > 0)) {
+	        		gen_sub_resource();	// must be called in each cycle
+	        	}
+	            gen_content_type(object_key);
+	        	gen_request_uri(object_key);
+	            gen_url_text();
+	            gen_http_request();
+	            gen_md5(file);
+	            gen_date();
+	            gen_signature_str();
+	            gen_authorization();
+	            
+	            process_http_headers_and_body(file);
+	            
+	            CloseableHttpClient http_client = HttpClients.createDefault();
+	            
+	            CloseableHttpResponse response = http_client.execute(http_request);
+	            
+	            HttpEntity entity = response.getEntity();
+	            
+	            if (entity != null) {
+	                long resp_len = entity.getContentLength();
+	                
+	                if (resp_len > 0) {
+	                	if(parse.getOp_type().equalsIgnoreCase("GetObject")) {
+	                        createFile(parse.getFile_path(), entity);
+	                	} else {
+	                		//System.out.println(EntityUtils.toString(entity));
+	                		xml_parser.parse(parse.getOp_type(), EntityUtils.toString(entity), parse.isIs_format());
+	                	}
+	                }
+	            }
+	            
+	            
+	            /* *************************************************************
+	             * if set part-size, ignore part-num and part-id 
+	             * if no set part-size and no set part-id, upload all parts
+	             * ************************************************************/
+	            if (++part_id > part_num) {
+	            	break;  //while
+	            }
+	            
+	            if (!(parse.getOp_type().equalsIgnoreCase("UploadPart") && 
+	            	  (parse.getPart_size() > 0 || 
+					   (parse.getPart_size() == 0 && 
+					    parse.getPart_number() > 0 && 
+					    parse.getPart_id() == 0)))) {
+	            	break; // while(true)
+	            }
+        	}
         }
     }
 
+    private void get_part_info(long file_size, int part_num, int part_id, long part_size) {
+    	if (part_size == 0) {
+    		if (part_id == 0) {
+    			part_id = 1;
+    		}
+    		this.part_num = part_num;
+    		this.part_id = part_id;
+    		
+    		return;
+    	}
+    	
+    	this.part_id = 1;
+    	
+    	if (file_size % part_size == 0) {
+    		this.part_num = (int) (file_size / part_size);
+    		this.part_size = part_size;
+    		this.last_part_size = part_size;
+    	} else {
+    		this.part_num = (int) (file_size / part_size) + 1;
+    		this.part_size = part_size;
+    		this.last_part_size = file_size - part_size * (this.part_num - 1);
+    	}
+    }
+    
+    private boolean createFile(String destFileName, HttpEntity entity) {  
+        File file = new File(destFileName);  
+        if(file.exists()) {  
+            System.out.println("Target file already exists!");  
+            return false;  
+        }  
+        if (destFileName.endsWith(File.separator)) {  
+            System.out.println("Create file failure, target file can't be directory!");  
+            return false;  
+        }  
+
+        if(file.getParentFile() != null && !file.getParentFile().exists()) {  
+            if(!file.getParentFile().mkdirs()) {  
+                System.out.println("Fail to create directory of target file!");  
+                return false;  
+            }  
+        }  
+
+        try {  
+            if (file.createNewFile()) {  
+                //System.out.println("创建单个文件" + destFileName + "成功！");  
+            	FileOutputStream outputstream = new FileOutputStream(file);
+            	entity.writeTo(outputstream);
+            	
+                return true;  
+            } else {  
+                System.out.println("Create file failure!");  
+                return false;  
+            }  
+        } catch (IOException e) {  
+            e.printStackTrace();  
+            System.out.println("Create file failure!" + e.getMessage());  
+            return false;  
+        }
+    }
     private String encodeBase64(byte[] input) throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         Class<?> clazz = Class.forName("com.sun.org.apache.xerces.internal.impl.dv.util.Base64");
         Method mainMethod = clazz.getMethod("encode", byte[].class);

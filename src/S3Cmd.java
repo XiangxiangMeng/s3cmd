@@ -13,8 +13,8 @@ public class S3Cmd {
         try {
             parse_arg.init();
             parse_arg.parse(args);
-            s3_op.init();
-            s3_op.process_request();
+	        s3_op.init();
+	        s3_op.process_request();
         } catch (InvalidOpException e) {
             System.out.println("Error: invalid op type.");
         } catch (ParseException e) {
