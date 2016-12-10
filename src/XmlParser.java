@@ -16,7 +16,7 @@ public class XmlParser {
 
     public void parse(String op, String respXML, boolean isFormat)
             throws ParserConfigurationException, SAXException, IOException {
-        System.out.println("=====================================================================================");
+        //System.out.println("=====================================================================================");
         switch (op) {
         case "GetService":
             parseGetServiceResp(respXML, isFormat);

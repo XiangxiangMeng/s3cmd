@@ -38,6 +38,7 @@ import org.apache.http.entity.FileEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.apache.http.Header;
 
 public class S3Op {
     private String url_text = "";
@@ -797,9 +798,7 @@ public class S3Op {
     public void process_request() throws Exception {
         String object_key;
         File file;
-        
-        
-        
+
         for (Map.Entry<String, File> entry : files_map.entrySet()) {
             object_key = entry.getKey();
             file = entry.getValue();
@@ -831,6 +830,9 @@ public class S3Op {
                 CloseableHttpClient http_client = HttpClients.createDefault();
 
                 CloseableHttpResponse response = http_client.execute(http_request);
+                
+                Header[] resp_header = response.getAllHeaders();
+                print_resp_header(resp_header);
 
                 HttpEntity entity = response.getEntity();
 
@@ -866,6 +868,20 @@ public class S3Op {
         }
     }
 
+    private void print_resp_header(Header[] resp_header) {
+        int len = resp_header.length;
+        Header header;
+        
+        System.out.println("=====================================================================================");
+        
+        for (int i = 0; i < len; ++i) {
+            header = resp_header[i];
+            System.out.println(header.getName() + ":" + header.getValue());
+        }
+        
+        System.out.println("=====================================================================================");
+    }
+    
     private void get_part_info(long file_size, int part_num, int part_id, long part_size) {
         if (part_size == 0) {
             if (part_id == 0) {
