@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -528,7 +529,7 @@ public class S3Op {
         }
     }
     
-    private void gen_signature_str() {
+    private void gen_signature_str() throws UnsupportedEncodingException {
         //gen_canonicalized_amz_headers_str();
         signature_str = "";
         
@@ -576,7 +577,7 @@ public class S3Op {
         }
 
         signature_str += tmp_request_uri;
-
+        
         System.out.println(signature_str);
     }
     
@@ -817,7 +818,8 @@ public class S3Op {
                     gen_sub_resource();	// must be called in each cycle
                 }
                 gen_content_type(object_key);
-                gen_request_uri(object_key);
+                gen_request_uri(URLEncoder.encode(object_key, "utf-8"));
+                //gen_request_uri(object_key);
                 gen_url_text();
                 gen_http_request();
                 gen_md5(file);
