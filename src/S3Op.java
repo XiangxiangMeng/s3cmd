@@ -31,6 +31,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
+import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -241,7 +242,11 @@ public class S3Op {
         } else if (op_type.equalsIgnoreCase("PutBucketversioning") || 
                    op_type.equalsIgnoreCase("GetBucketversioning")) {
             sub_resource = "versioning";
-        } else if (op_type.equalsIgnoreCase("GetBucketObjectversions")) {
+        } else if (op_type.equalsIgnoreCase("PutBucketcors") || 
+                   op_type.equalsIgnoreCase("GetBucketcors") || 
+                   op_type.equalsIgnoreCase("DeleteBucketcors")) {
+            sub_resource = "cors";
+     } else if (op_type.equalsIgnoreCase("GetBucketObjectversions")) {
             sub_resource = "versions";
         } else if (op_type.equalsIgnoreCase("DeleteMultipleObjects")) {
             sub_resource = "delete";
@@ -454,6 +459,7 @@ public class S3Op {
             op.equalsIgnoreCase("GetBucketObjectversions") ||
             op.equalsIgnoreCase("GetBucketversioning") ||
             op.equalsIgnoreCase("GetBucketwebsite") ||
+            op.equalsIgnoreCase("GetBucketcors") ||
             op.equalsIgnoreCase("GetObject") ||
             op.equalsIgnoreCase("GetObjectacl") ||
             op.equalsIgnoreCase("ListMultipartUploads") ||
@@ -463,6 +469,7 @@ public class S3Op {
                    op.equalsIgnoreCase("PutBucketacl") ||
                    op.equalsIgnoreCase("PutBucketlifecycle") ||
                    op.equalsIgnoreCase("PutBucketwebsite") ||
+                   op.equalsIgnoreCase("PutBucketcors") ||
                    op.equalsIgnoreCase("PutBucketversioning") ||
                    op.equalsIgnoreCase("PutObject") ||
                    op.equalsIgnoreCase("PutObjectacl") ||
@@ -475,6 +482,7 @@ public class S3Op {
         } else if (op.equalsIgnoreCase("DeleteBucket") ||
                    op.equalsIgnoreCase("DeleteBucketlifecycle") ||
                    op.equalsIgnoreCase("DeleteBucketwebsite") ||
+                   op.equalsIgnoreCase("DeleteBucketcors") ||
                    op.equalsIgnoreCase("DeleteObject") ||
                    op.equalsIgnoreCase("AbortMultipartUpload")) {
             op_type = "DELETE";
@@ -482,6 +490,8 @@ public class S3Op {
                    op.equalsIgnoreCase("InitiateMultipartUpload") ||
                    op.equalsIgnoreCase("CompleteMultipartUpload")) {
             op_type = "POST";
+        } else if (op.equalsIgnoreCase("Options")) {
+            op_type = "OPTIONS";
         }
     }
     
@@ -606,6 +616,8 @@ public class S3Op {
             http_request = new HttpPost(url_text);
         } else if (op_type.equals("DELETE")) {
             http_request = new HttpDelete(url_text);
+        } else if (op_type.equals("OPTIONS")) {
+            http_request = new HttpOptions(url_text);
         } 
     }
     
@@ -744,6 +756,7 @@ public class S3Op {
             if (op.equals("PutBucketacl") ||
                 op.equals("PutBucketversioning") ||
                 op.equals("PutBucketwebsite") ||
+                op.equals("PutBucketcors") ||
                 op.equals("PutBucketlifecycle") ||
                 op.equals("DeleteMultipleObjects")) {
                 // object is null and file is not null
@@ -754,6 +767,7 @@ public class S3Op {
                        op.equals("GetObjectacl") ||
                        op.equals("PutObjectacl") ||		//PutObjectacl with HTTP Header
                        op.equals("PutObjectCopy") ||
+                       op.equals("Options") ||
                        op.equals("InitiateMultipartUpload") ||
                        op.equals("UploadPart") ||
                        op.equals("CompleteMultipartUpload") ||
