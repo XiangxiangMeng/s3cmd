@@ -26,10 +26,15 @@ public class ParseArgs {
     private String object_name = "";
     private String file_path = "";
     private String version_id = "";
+    private String upload_id = "";
+    private int part_number = 0;	// total part number
+    private int part_id = 0;     //current part id
+    private int part_size = 0;
     private boolean anonymous = false;
     private boolean use_md5 = false;
     private boolean upload_static_website = false;
     private boolean virtual_hosted_style = false;
+    private boolean is_format = false;
     private Map<String, String> http_headers;
     private Map<String, String> http_params;
 
@@ -64,14 +69,19 @@ public class ParseArgs {
                                           .build());
         
         options.addOption(Option.builder().longOpt("website")
-						                  .desc("upload a static website, combine with PutObject")
-						                  .hasArg(false)
-						                  .build());
+                                          .desc("upload a static website, combine with PutObject")
+                                          .hasArg(false)
+                                          .build());
         
         options.addOption(Option.builder().longOpt("vh-style")
-							              .desc("use virtual hosted-style access method")
-							              .hasArg(false)
-							              .build());
+                                          .desc("use virtual hosted-style access method")
+                                          .hasArg(false)
+                                          .build());
+        
+        options.addOption(Option.builder().longOpt("format")
+                                          .desc("according to the demand of the complete multipart upload output the result of the list parts")
+                                          .hasArg(false)
+                                          .build());
         
         options.addOption(Option.builder().longOpt("type")
                                           .desc("s3 operation type:\n"
@@ -79,10 +89,12 @@ public class ParseArgs {
                                                   + "<DeleteBucket>\n"
                                                   + "<DeleteBucketlifecycle>\n"
                                                   + "<DeleteBucketwebsite>\n"
+                                                  + "<DeleteBucketcors>\n"
                                                   + "<GetBucket>\n"
                                                   + "<GetBucketacl>\n"
                                                   + "<GetBucketlifecycle>\n"
                                                   + "<GetBucketwebsite>\n"
+                                                  + "<GetBucketcors>\n"
                                                   + "<GetBucketObjectversions>\n"
                                                   + "<GetBucketversioning>\n"
                                                   + "<HeadBucket>\n"
@@ -90,15 +102,24 @@ public class ParseArgs {
                                                   + "<PutBucketacl>\n"
                                                   + "<PutBucketlifecycle>\n"
                                                   + "<PutBucketwebsite>\n"
+                                                  + "<PutBucketcors>\n"
                                                   + "<PutBucketversioning>\n"
                                                   + "<DeleteObject>\n"
                                                   + "<DeleteMultipleObjects>\n"
+                                                  + "<DeleteBucketcors>\n"
+                                                  + "<Options>\n"
                                                   + "<GetObject>\n"
                                                   + "<GetObjectacl>\n"
                                                   + "<HeadObject>\n"
                                                   + "<PutObject>\n"
                                                   + "<PutObjectacl>\n"
-                                                  + "<PutObjectCopy>")
+                                                  + "<PutObjectCopy>\n"
+                                                  + "<InitiateMultipartUpload>\n"
+                                                  + "<UploadPart>\n"
+                                                  + "<CompleteMultipartUpload>\n"
+                                                  + "<AbortMultipartUpload>\n"
+                                                  + "<ListParts>\n"
+                                                  + "<ListMultipartUploads>")
                                           .hasArg()
                                           .numberOfArgs(1)
                                           .argName("s3 op")
@@ -146,10 +167,38 @@ public class ParseArgs {
                                           .argName("versionid")
                                           .build());
         
+        options.addOption(Option.builder().longOpt("upload-id")
+                                          .desc("upload id")
+                                          .hasArg()
+                                          .numberOfArgs(1)
+                                          .argName("uploadid")		// --help: show as --upload-id=<uploadid>
+                                          .build());
+        
+        options.addOption(Option.builder().longOpt("part-number")
+                                          .desc("part number")
+                                          .hasArg()
+                                          .numberOfArgs(1)
+                                          .argName("partnumber")	// --help: show as --part-number=<partnumber>
+                                          .build());
+        
+        options.addOption(Option.builder().longOpt("part-id")
+                                          .desc("part id")
+                                          .hasArg()
+                                          .numberOfArgs(1)
+                                          .argName("partid")	// --help: show as --part-number=<partnumber>
+                                          .build());
+        
+        options.addOption(Option.builder().longOpt("part-size")
+                                          .desc("part size")
+                                          .hasArg()
+                                          .numberOfArgs(1)
+                                          .argName("partsize")	// --help: show as --part-number=<partnumber>
+                                          .build());
+        
         options.addOption(Option.builder("P").desc("http request parameters")
-                                              .hasArgs()
-                                              .argName("param-name=value")
-                                              .build());
+                                             .hasArgs()
+                                             .argName("param-name=value")
+                                             .build());
         
         options.addOption(Option.builder("H").desc("HTTP header")
                                              .hasArgs()
@@ -200,6 +249,10 @@ public class ParseArgs {
             this.setVirtual_hosted_style(true);
         }
         
+        if (commandLine.hasOption("format")) {
+            this.setIs_format(true);
+        }
+        
         if (commandLine.hasOption("type")) {
             setOp_type(commandLine.getOptionValue("type"));
         }
@@ -228,6 +281,22 @@ public class ParseArgs {
             setVersion_id(commandLine.getOptionValue("version-id"));
         }
         
+        if (commandLine.hasOption("upload-id")) {
+            setUpload_id(commandLine.getOptionValue("upload-id"));
+        }
+        
+        if (commandLine.hasOption("part-number")) {
+            setPart_number(Integer.valueOf(commandLine.getOptionValue("part-number")));
+        }
+        
+        if (commandLine.hasOption("part-id")) {
+            setPart_id(Integer.valueOf(commandLine.getOptionValue("part-id")));
+        }
+        
+        if (commandLine.hasOption("part-size")) {
+        	parse_part_size(commandLine.getOptionValue("part-size"));
+        }
+        
         if (commandLine.hasOption("H")) {
             String[] headers = commandLine.getOptionValues("H");
             for(int i = 0; i <= headers.length - 2; i += 2) {
@@ -240,16 +309,43 @@ public class ParseArgs {
             String name;
             String value;
             for(int i = 0; i <= params.length - 2; i += 2) {
-            	name = params[i];
-            	value = params[i + 1];
-            	if (name.equalsIgnoreCase("continuation-token")) {
-            		//value.replaceAll("\\\\+", "%2B");
-            	}
+                name = params[i];
+                value = params[i + 1];
+                if (name.equalsIgnoreCase("continuation-token")) {
+                    //value.replaceAll("\\\\+", "%2B");
+                }
+
                 http_params.put(name, value);
             }
         }
         
         arg_check.check();
+    }
+    
+    private void parse_part_size(String part_sz) {
+        part_sz = part_sz.trim();
+
+        char last = part_sz.charAt(part_sz.length() - 1);
+        String part_size_str = part_sz.substring(0, part_sz.length() - 1);
+        int size = Integer.valueOf(part_size_str);
+
+        switch (last) {
+        case 'K':
+        case 'k':
+            part_size = size * 1024;
+            break;
+        case 'M':
+        case 'm':
+            part_size = size * 1024 * 1024;
+            break;
+        case 'G':
+        case 'g':
+            part_size = size * 1024 * 1024 * 1024;
+            break;
+        default:
+            part_size = size;
+            break;
+        }
     }
     
     public String getHost() {
@@ -316,6 +412,38 @@ public class ParseArgs {
         this.version_id = version_id;
     }
 
+    public String getUpload_id() {
+        return upload_id;
+    }
+
+    public void setUpload_id(String upload_id) {
+        this.upload_id = upload_id;
+    }
+
+    public int getPart_number() {
+        return part_number;
+    }
+
+    public void setPart_number(int part_number) {
+        this.part_number = part_number;
+    }
+
+    public int getPart_id() {
+        return part_id;
+    }
+
+    public void setPart_id(int part_id) {
+        this.part_id = part_id;
+    }
+
+    public int getPart_size() {
+        return part_size;
+    }
+
+    public void setPart_size(int part_size) {
+        this.part_size = part_size;
+    }
+
     public boolean isAnonymous() {
         return anonymous;
     }
@@ -333,22 +461,30 @@ public class ParseArgs {
     }
 
     public boolean isUpload_static_website() {
-		return upload_static_website;
-	}
+        return upload_static_website;
+    }
 
-	public void setUpload_static_website(boolean upload_static_website) {
-		this.upload_static_website = upload_static_website;
-	}
+    public void setUpload_static_website(boolean upload_static_website) {
+        this.upload_static_website = upload_static_website;
+    }
 
-	public boolean isVirtual_hosted_style() {
-		return virtual_hosted_style;
-	}
+    public boolean isVirtual_hosted_style() {
+        return virtual_hosted_style;
+    }
 
-	public void setVirtual_hosted_style(boolean virtual_hosted_style) {
-		this.virtual_hosted_style = virtual_hosted_style;
-	}
+    public void setVirtual_hosted_style(boolean virtual_hosted_style) {
+        this.virtual_hosted_style = virtual_hosted_style;
+    }
 
-	public Map<String, String> getHttp_headers() {
+    public boolean isIs_format() {
+        return is_format;
+    }
+
+    public void setIs_format(boolean is_format) {
+        this.is_format = is_format;
+    }
+
+    public Map<String, String> getHttp_headers() {
         return http_headers;
     }
 

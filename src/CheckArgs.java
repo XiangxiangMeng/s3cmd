@@ -18,9 +18,11 @@ public class CheckArgs {
                                                                    "DeleteBucket",
                                                                    "DeleteBucketlifecycle",
                                                                    "DeleteBucketwebsite",
+                                                                   "DeleteBucketcors",
                                                                    "GetBucket",
                                                                    "GetBucketacl",
                                                                    "GetBucketlifecycle",
+                                                                   "GetBucketcors",
                                                                    "GetBucketObjectversions",
                                                                    "GetBucketversioning",
                                                                    "GetBucketwebsite",
@@ -29,6 +31,7 @@ public class CheckArgs {
                                                                    "PutBucketacl",
                                                                    "PutBucketlifecycle",
                                                                    "PutBucketwebsite",
+                                                                   "PutBucketcors",
                                                                    "PutBucketversioning",
                                                                    "DeleteObject",
                                                                    "DeleteMultipleObjects",
@@ -37,7 +40,14 @@ public class CheckArgs {
                                                                    "HeadObject",
                                                                    "PutObject",
                                                                    "PutObjectacl",
-                                                                   "PutObjectCopy"));
+                                                                   "PutObjectCopy",
+                                                                   "Options",
+                                                                   "InitiateMultipartUpload",
+                                                                   "UploadPart",
+                                                                   "CompleteMultipartUpload",
+                                                                   "AbortMultipartUpload",
+                                                                   "ListParts",
+                                                                   "ListMultipartUploads"));
     
     private Set<String> comm_headers_set = new HashSet<String>(Arrays.asList("Content-Type",
                                                                              "x-amz-content-sha256"));
@@ -159,14 +169,74 @@ public class CheckArgs {
         } else if (op.equalsIgnoreCase("PutObject")) {
             check_put_object();
         } else if (op.equalsIgnoreCase("PutObjectCopy")) {
-        	check_put_object_copy();
+            check_put_object_copy();
         } else if (op.equalsIgnoreCase("PutBucketwebsite")) {
-        	check_put_bucket_website();
+            check_put_bucket_website();
         } else if (op.equalsIgnoreCase("PutBucketversioning")) {
-        	check_put_bucket_versioning();
+            check_put_bucket_versioning();
+        } else if (op.equalsIgnoreCase("UploadPart")) {
+            check_upload_part();
+        } else if (op.equalsIgnoreCase("CompleteMultipartUpload")) {
+            check_complete_multipart_upload();
+        } else if (op.equalsIgnoreCase("AbortMultipartUpload")) {
+            check_abort_multipart_upload();
+        } else if (op.equalsIgnoreCase("ListParts")) {
+            check_list_parts();
         }
     }
     
+    private void check_list_parts() throws InvalidOptionException {
+        if (parse.isUse_md5() ||
+            parse.isUpload_static_website() ||
+            parse.getBucket_name().isEmpty() ||
+            parse.getObject_name().isEmpty() ||
+            !parse.getFile_path().isEmpty() ||
+            !parse.getVersion_id().isEmpty() ||
+            parse.getUpload_id().isEmpty()) {
+            throw new InvalidOptionException();
+        }
+    }
+
+    private void check_abort_multipart_upload() throws InvalidOptionException {
+        if (parse.isUse_md5() ||
+            parse.isUpload_static_website() ||
+            parse.getBucket_name().isEmpty() ||
+            parse.getObject_name().isEmpty() ||
+            !parse.getFile_path().isEmpty() ||
+            !parse.getVersion_id().isEmpty() ||
+            parse.getUpload_id().isEmpty()) {
+            throw new InvalidOptionException();
+        }
+    }
+
+    private void check_complete_multipart_upload() throws InvalidOptionException {
+        if (parse.isUse_md5() ||
+            parse.isUpload_static_website() ||
+            parse.getBucket_name().isEmpty() ||
+            parse.getObject_name().isEmpty() ||
+            parse.getFile_path().isEmpty() ||
+            !parse.getVersion_id().isEmpty() ||
+            parse.getUpload_id().isEmpty()) {
+            throw new InvalidOptionException();
+        }
+    }
+
+    private void check_upload_part() throws InvalidOptionException {
+        if (parse.isUse_md5() ||
+            parse.getBucket_name().isEmpty() ||
+            parse.getObject_name().isEmpty() ||
+            parse.getFile_path().isEmpty() ||
+            !parse.getVersion_id().isEmpty() ||
+            parse.getUpload_id().isEmpty()// ||
+            //parse.getPart_number() <= 0 ||
+            //parse.getPart_id() < 1 ||
+            //parse.getPart_id() > 10000 ||
+            //parse.getPart_number() < parse.getPart_id()
+            ) {
+            throw new InvalidOptionException();
+        }
+    }
+
     public void check_basic_option() throws InvalidOptionException {
         if (parse.getOp_type().isEmpty() ||
             parse.getHost().isEmpty()) {
@@ -195,10 +265,10 @@ public class CheckArgs {
     
     public void check_put_bucket_lifecycle() throws InvalidOptionException {
         if (!parse.isUse_md5() ||
-        	parse.getBucket_name().isEmpty() ||
-        	!parse.getObject_name().isEmpty() ||
-        	parse.getFile_path().isEmpty() ||
-        	!parse.getVersion_id().isEmpty()) {
+            parse.getBucket_name().isEmpty() ||
+            !parse.getObject_name().isEmpty() ||
+            parse.getFile_path().isEmpty() ||
+            !parse.getVersion_id().isEmpty()) {
             throw new InvalidOptionException();
         }
     }
@@ -311,19 +381,19 @@ public class CheckArgs {
         if (parse.isUse_md5() ||
             parse.getBucket_name().isEmpty() || 
             parse.getObject_name().isEmpty() ||
-            !parse.getFile_path().isEmpty()) {
+            parse.getFile_path().isEmpty()) {
             throw new InvalidOptionException();
         }
         
         for (Map.Entry<String, String> entry : parse.getHttp_params().entrySet()) {
             if (!get_object_params_set.contains(entry.getKey())) {
-                throw new InvalidParamException();
+                //throw new InvalidParamException();
             }
         }
         
         for (Map.Entry<String, String> entry : parse.getHttp_headers().entrySet()) {
             if (!get_object_headers_set.contains(entry.getKey())) {
-                throw new InvalidHeaderException();
+                //throw new InvalidHeaderException();
             }
         }
     }
@@ -345,14 +415,13 @@ public class CheckArgs {
     
     public void check_put_object() throws InvalidHeaderException, InvalidOptionException {
         if (parse.getBucket_name().isEmpty() || 
-            !parse.getObject_name().isEmpty() || 
             parse.getFile_path().isEmpty()) {
             throw new InvalidOptionException();
         }
         
         for (Map.Entry<String, String> entry : parse.getHttp_headers().entrySet()) {
             if (!put_object_headers_set.contains(entry.getKey())) {
-                throw new InvalidHeaderException();
+                //throw new InvalidHeaderException();
             }
         }
     }
@@ -404,7 +473,7 @@ public class CheckArgs {
     }
     
     public void check_put_bucket_website() throws InvalidOptionException {
-    	if (parse.getBucket_name().isEmpty() ||
+        if (parse.getBucket_name().isEmpty() ||
             !parse.getObject_name().isEmpty() ||
             parse.getFile_path().isEmpty() ||
             !parse.getVersion_id().isEmpty()) {
@@ -413,7 +482,7 @@ public class CheckArgs {
     }
     
     public void check_put_bucket_versioning() throws InvalidOptionException {
-    	if (parse.getBucket_name().isEmpty() || 
+        if (parse.getBucket_name().isEmpty() || 
             !parse.getObject_name().isEmpty() ||
             parse.getFile_path().isEmpty() ||
             !parse.getVersion_id().isEmpty()) {
