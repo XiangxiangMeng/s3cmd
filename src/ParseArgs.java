@@ -1,3 +1,5 @@
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -313,6 +315,13 @@ public class ParseArgs {
                 value = params[i + 1];
                 if (name.equalsIgnoreCase("continuation-token")) {
                     //value.replaceAll("\\\\+", "%2B");
+                    try {
+                        value = URLEncoder.encode(value, "utf-8");
+                    } catch (UnsupportedEncodingException e) {
+                        // TODO Auto-generated catch block
+                        System.out.println("Unrecognize continuation-token!!!");
+                        e.printStackTrace();
+                    }
                 }
 
                 http_params.put(name, value);
