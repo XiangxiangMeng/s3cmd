@@ -378,7 +378,9 @@ public class S3Op {
             }
         }
         
-        System.out.println(url_text);
+        if (parse.isIs_verbose()) {
+            System.out.println(url_text);
+        }
     }
     
     private void open_files() throws IOException {
@@ -588,7 +590,9 @@ public class S3Op {
 
         signature_str += tmp_request_uri;
         
-        System.out.println(signature_str);
+        if (parse.isIs_verbose()) {
+            System.out.println(signature_str);
+        }
     }
     
     private void gen_authorization() throws InvalidKeyException, UnsupportedEncodingException, ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchAlgorithmException{
@@ -680,9 +684,11 @@ public class S3Op {
         long result[] = get_buffer_size_and_offset(file_size);
         buffer_size = result[0];
         offset = result[1];
-
-        System.out.println("filesize: " + file_size + ", offset: " + offset + ", buffer_size: " + buffer_size);
-
+        
+        if (parse.isIs_verbose()) {
+            System.out.println("filesize: " + file_size + ", offset: " + offset + ", buffer_size: " + buffer_size);
+        }
+        
         byte[] buffer = new byte[(int) buffer_size];
 
         fStream.skip(offset);
@@ -821,7 +827,9 @@ public class S3Op {
             if (file != null) {
                 // for multipart upload
                 get_part_info(file.length(), parse.getPart_number(), parse.getPart_id(), parse.getPart_size());
-                System.out.println("part_num: " + part_num + ", part_id: " + part_id + ", part_size: " + part_size + ", last_part_size: " + last_part_size);
+                if (part_num > 0 && parse.isIs_verbose()) {
+                    System.out.println("part_num: " + part_num + ", part_id: " + part_id + ", part_size: " + part_size + ", last_part_size: " + last_part_size);
+                }
             }
         
             while (true) {
@@ -848,8 +856,9 @@ public class S3Op {
                 CloseableHttpResponse response = http_client.execute(http_request);
                 
                 Header[] resp_header = response.getAllHeaders();
-                print_resp_header(resp_header);
-
+                if (parse.isIs_verbose()) {
+                    print_resp_header(resp_header);
+                }
                 HttpEntity entity = response.getEntity();
 
                 if (entity != null) {
@@ -860,7 +869,9 @@ public class S3Op {
                             createFile(parse.getFile_path(), entity);
                         } else {
                             //System.out.println(EntityUtils.toString(entity));
-                            xml_parser.parse(parse.getOp_type(), EntityUtils.toString(entity), parse.isIs_format());
+                            if (parse.isIs_verbose()) {
+                                xml_parser.parse(parse.getOp_type(), EntityUtils.toString(entity), parse.isIs_format());
+                            }
                         }
                     }
                 }

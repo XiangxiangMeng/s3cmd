@@ -37,6 +37,7 @@ public class ParseArgs {
     private boolean upload_static_website = false;
     private boolean virtual_hosted_style = false;
     private boolean is_format = false;
+    private boolean is_verbose = false;
     private Map<String, String> http_headers;
     private Map<String, String> http_params;
 
@@ -84,7 +85,12 @@ public class ParseArgs {
                                           .desc("according to the demand of the complete multipart upload output the result of the list parts")
                                           .hasArg(false)
                                           .build());
-        
+
+        options.addOption(Option.builder().longOpt("verbose")
+                                           .desc("print the response information")
+                                           .hasArg(false)
+                                           .build());
+
         options.addOption(Option.builder().longOpt("type")
                                           .desc("s3 operation type:\n"
                                                   + "<GetService>\n"
@@ -255,6 +261,10 @@ public class ParseArgs {
             this.setIs_format(true);
         }
         
+        if (commandLine.hasOption("verbose")) {
+            this.setIs_verbose(true);
+        }
+
         if (commandLine.hasOption("type")) {
             setOp_type(commandLine.getOptionValue("type"));
         }
@@ -491,6 +501,14 @@ public class ParseArgs {
 
     public void setIs_format(boolean is_format) {
         this.is_format = is_format;
+    }
+
+    public boolean isIs_verbose() {
+        return is_verbose;
+    }
+
+    public void setIs_verbose(boolean is_verbose) {
+        this.is_verbose = is_verbose;
     }
 
     public Map<String, String> getHttp_headers() {
