@@ -44,6 +44,7 @@ public class CheckArgs {
                                                                    "Options",
                                                                    "InitiateMultipartUpload",
                                                                    "UploadPart",
+                                                                   "UploadPartCopy",
                                                                    "CompleteMultipartUpload",
                                                                    "AbortMultipartUpload",
                                                                    "ListParts",
@@ -176,6 +177,8 @@ public class CheckArgs {
             check_put_bucket_versioning();
         } else if (op.equalsIgnoreCase("UploadPart")) {
             check_upload_part();
+        } else if (op.equalsIgnoreCase("UploadPartCopy")) {
+            check_upload_part_copy();
         } else if (op.equalsIgnoreCase("CompleteMultipartUpload")) {
             check_complete_multipart_upload();
         } else if (op.equalsIgnoreCase("AbortMultipartUpload")) {
@@ -222,8 +225,7 @@ public class CheckArgs {
     }
 
     private void check_upload_part() throws InvalidOptionException {
-        if (parse.isUse_md5() ||
-            parse.getBucket_name().isEmpty() ||
+        if (parse.getBucket_name().isEmpty() ||
             parse.getObject_name().isEmpty() ||
             parse.getFile_path().isEmpty() ||
             !parse.getVersion_id().isEmpty() ||
@@ -233,6 +235,14 @@ public class CheckArgs {
             //parse.getPart_id() > 10000 ||
             //parse.getPart_number() < parse.getPart_id()
             ) {
+            throw new InvalidOptionException();
+        }
+    }
+    
+    private void check_upload_part_copy() throws InvalidOptionException {
+        if (parse.getBucket_name().isEmpty() ||
+            parse.getObject_name().isEmpty() ||
+            parse.getUpload_id().isEmpty()) {
             throw new InvalidOptionException();
         }
     }

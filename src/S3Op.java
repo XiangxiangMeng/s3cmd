@@ -257,7 +257,8 @@ public class S3Op {
                    op_type.equalsIgnoreCase("GetBucketwebsite") || 
                    op_type.equalsIgnoreCase("DeleteBucketwebsite")) {
             sub_resource = "website";
-        } else if (op_type.equalsIgnoreCase("UploadPart")) {
+        } else if (op_type.equalsIgnoreCase("UploadPart") ||
+                   op_type.equalsIgnoreCase("UploadPartCopy")) {
             sub_resource += ("partNumber=" + part_id);
             sub_resource += ("&uploadId=" + parse.getUpload_id());
         } else if (op_type.equalsIgnoreCase("CompleteMultipartUpload") || 
@@ -476,7 +477,8 @@ public class S3Op {
                    op.equalsIgnoreCase("PutObject") ||
                    op.equalsIgnoreCase("PutObjectacl") ||
                    op.equalsIgnoreCase("PutObjectCopy") ||
-                   op.equalsIgnoreCase("UploadPart")) {
+                   op.equalsIgnoreCase("UploadPart") ||
+                   op.equalsIgnoreCase("UploadPartCopy")) {
             op_type = "PUT";
         } else if (op.equalsIgnoreCase("HeadBucket") ||
                    op.equalsIgnoreCase("HeadObject")) {
@@ -776,6 +778,7 @@ public class S3Op {
                        op.equals("Options") ||
                        op.equals("InitiateMultipartUpload") ||
                        op.equals("UploadPart") ||
+                       op.equals("UploadPartCopy") ||
                        op.equals("CompleteMultipartUpload") ||
                        op.equals("AbortMultipartUpload") ||
                        op.equals("ListParts")) {
@@ -830,14 +833,20 @@ public class S3Op {
                 if (part_num > 0 && parse.isIs_verbose()) {
                     System.out.println("part_num: " + part_num + ", part_id: " + part_id + ", part_size: " + part_size + ", last_part_size: " + last_part_size);
                 }
+            } else {
+                // for multipart upload copy
+                if (parse.getPart_id() > 0) {
+                    part_id = parse.getPart_id();
+                }
             }
         
             while (true) {
                 object_key = re_get_object_key(object_key);
 
                 if (parse.getPart_size() > 0 || 
-                    (parse.getPart_size() == 0 && parse.getPart_number() > 0)) {
-                    gen_sub_resource();	// must be called in each cycle
+                    (parse.getPart_size() == 0 && parse.getPart_number() > 0) ||
+                    (parse.getPart_size() == 0 && parse.getPart_number() == 0 && parse.getPart_id() > 0)) {   // for multipart upload copy
+                    gen_sub_resource();     // must be called in each cycle
                 }
                 gen_content_type(object_key);
                 gen_request_uri(URLEncoder.encode(object_key, "utf-8"));

@@ -124,6 +124,7 @@ public class ParseArgs {
                                                   + "<PutObjectCopy>\n"
                                                   + "<InitiateMultipartUpload>\n"
                                                   + "<UploadPart>\n"
+                                                  + "<UploadPartCopy>\n"
                                                   + "<CompleteMultipartUpload>\n"
                                                   + "<AbortMultipartUpload>\n"
                                                   + "<ListParts>\n"
