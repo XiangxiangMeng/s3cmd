@@ -271,6 +271,10 @@ public class S3Op {
             if (!parse.getVersion_id().isEmpty()) {
                 sub_resource += ("versionId=" + parse.getVersion_id());
             }
+        } else if (op_type.equalsIgnoreCase("PutObjecttagging") || 
+                   op_type.equalsIgnoreCase("GetObjecttagging") || 
+                   op_type.equalsIgnoreCase("DeleteObjecttagging")) {
+            sub_resource = "tagging";
         }
     }
     
@@ -465,6 +469,7 @@ public class S3Op {
             op.equalsIgnoreCase("GetBucketcors") ||
             op.equalsIgnoreCase("GetObject") ||
             op.equalsIgnoreCase("GetObjectacl") ||
+            op.equalsIgnoreCase("GetObjecttagging") ||
             op.equalsIgnoreCase("ListMultipartUploads") ||
             op.equalsIgnoreCase("ListParts")) {
             op_type = "GET";
@@ -476,6 +481,7 @@ public class S3Op {
                    op.equalsIgnoreCase("PutBucketversioning") ||
                    op.equalsIgnoreCase("PutObject") ||
                    op.equalsIgnoreCase("PutObjectacl") ||
+                   op.equalsIgnoreCase("PutObjecttagging") ||
                    op.equalsIgnoreCase("PutObjectCopy") ||
                    op.equalsIgnoreCase("UploadPart") ||
                    op.equalsIgnoreCase("UploadPartCopy")) {
@@ -488,6 +494,7 @@ public class S3Op {
                    op.equalsIgnoreCase("DeleteBucketwebsite") ||
                    op.equalsIgnoreCase("DeleteBucketcors") ||
                    op.equalsIgnoreCase("DeleteObject") ||
+                   op.equalsIgnoreCase("DeleteObjecttagging") ||
                    op.equalsIgnoreCase("AbortMultipartUpload")) {
             op_type = "DELETE";
         } else if (op.equalsIgnoreCase("DeleteMultipleObjects") ||
@@ -772,8 +779,10 @@ public class S3Op {
             } else if (op.equals("GetObject") ||
                        op.equals("HeadObject") ||
                        op.equals("DeleteObject") ||
+                       op.equals("DeleteObjecttagging") ||
                        op.equals("GetObjectacl") ||
-                       op.equals("PutObjectacl") ||		//PutObjectacl with HTTP Header
+                       op.equals("GetObjecttagging") ||
+                       op.equals("PutObjectacl") ||     //PutObjectacl with HTTP Header
                        op.equals("PutObjectCopy") ||
                        op.equals("Options") ||
                        op.equals("InitiateMultipartUpload") ||

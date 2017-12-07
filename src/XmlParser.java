@@ -60,6 +60,9 @@ public class XmlParser {
         case "CompleteMultipartUpload":
             parseCompleteMultipartUploadResp(respXML, isFormat);
             break;
+        case "GetObjecttagging":
+            parseGetObjecttaggingResp(respXML, isFormat);
+            break;
         default:
             System.out.println(respXML);
         }
@@ -1451,5 +1454,76 @@ public class XmlParser {
     private InputStream StringTOInputStream(String in) throws UnsupportedEncodingException {
         ByteArrayInputStream is = new ByteArrayInputStream(in.getBytes("ISO-8859-1"));
         return is;
+    }
+
+    private void parseGetObjecttaggingResp(String respXML, boolean isFormat)
+            throws ParserConfigurationException, SAXException, IOException {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        InputStream is = StringTOInputStream(respXML);
+        Document document = db.parse(is);
+        NodeList tagging_list = document.getChildNodes();
+        int tagging_length = tagging_list.getLength();
+        for (int tagging_index = 0; tagging_index < tagging_length; ++tagging_index) {
+            Node taggingSubNode = tagging_list.item(tagging_index);
+            switch (taggingSubNode.getNodeName()) {
+            case "Tagging": {
+                System.out.println("  <Tagging>");
+                NodeList tagset_results = taggingSubNode.getChildNodes();
+                int tagset_length = tagset_results.getLength();
+                for (int tagset_index = 0; tagset_index < tagset_length; ++tagset_index) {
+                    Node tagsetSubNode = tagset_results.item(tagset_index);
+                    switch (tagsetSubNode.getNodeName()) {
+                    case "TagSet": {
+                        System.out.println("    <TagSet>");
+                        NodeList tag_results = tagsetSubNode.getChildNodes();
+                        int tag_length = tag_results.getLength();
+                        for (int tag_index = 0; tag_index < tag_length; ++tag_index) {
+                            Node tagSubNode = tag_results.item(tag_index);
+                            switch (tagSubNode.getNodeName()) {
+                            case "Tag": {
+                                System.out.println("      <Tag>");
+                                NodeList results = tagSubNode.getChildNodes();
+                                int length = results.getLength();
+                                for (int index = 0; index < length; ++index) {
+                                    Node SubNode = results.item(index);
+                                    switch (SubNode.getNodeName()) {
+                                    case "Key":
+                                        System.out.println(
+                                                "        <Key>" + SubNode.getTextContent() + "</Key>");
+                                        break;
+                                    case "Value":
+                                        System.out.println("        <Value>" + SubNode.getTextContent()
+                                                + "</Value>");
+                                        break;
+                                    default:
+                                        System.out.println("Unknown format!!!");
+                                        break;
+                                    }
+                                }
+                                System.out.println("      </Tag>");
+                                break;
+                            }
+                            default:
+                                System.out.println("      Unknown format!!!");
+                                break;
+                            }
+                        }
+                        System.out.println("    </TagSet>");
+                        break;
+                    }
+                    default:
+                        System.out.println("    Unknown format!!!");
+                        break;
+                    }
+                }
+                System.out.println("  </Tagging>");
+                break;
+            }
+            default:
+                System.out.println("  Unknown format!!!");
+                break;
+            }
+        }
     }
 }
