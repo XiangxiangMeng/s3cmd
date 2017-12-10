@@ -114,7 +114,8 @@ public class CheckArgs {
                                                                                    "x-amz-grant-write",
                                                                                    "x-amz-grant-read-acp",
                                                                                    "x-amz-grant-write-acp",
-                                                                                   "x-amz-grant-full-control"));
+                                                                                   "x-amz-grant-full-control",
+                                                                                   "x-amz-tagging"));
     
     private Set<String> put_object_copy_headers_set = new HashSet<String>(Arrays.asList("x-amz-copy-source",
                                                                                         "x-amz-copy-source-if-match",
@@ -126,7 +127,10 @@ public class CheckArgs {
                                                                                         "x-amz-grant-write",
                                                                                         "x-amz-grant-read-acp",
                                                                                         "x-amz-grant-write-acp",
-                                                                                        "x-amz-grant-full-control"));
+                                                                                        "x-amz-grant-full-control",
+                                                                                        "x-amz-metadata-directive",
+                                                                                        "x-amz-tagging-directive",
+                                                                                        "x-amz-tagging"));
     
     public CheckArgs(ParseArgs parse_args) {
         parse = parse_args;
