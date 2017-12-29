@@ -273,7 +273,10 @@ public class S3Op {
             }
         } else if (op_type.equalsIgnoreCase("PutObjecttagging") || 
                    op_type.equalsIgnoreCase("GetObjecttagging") || 
-                   op_type.equalsIgnoreCase("DeleteObjecttagging")) {
+                   op_type.equalsIgnoreCase("DeleteObjecttagging") ||
+                   op_type.equalsIgnoreCase("PutBuckettagging") || 
+                   op_type.equalsIgnoreCase("GetBuckettagging") || 
+                   op_type.equalsIgnoreCase("DeleteBuckettagging")) {
             sub_resource = "tagging";
         }
     }
@@ -467,6 +470,7 @@ public class S3Op {
             op.equalsIgnoreCase("GetBucketversioning") ||
             op.equalsIgnoreCase("GetBucketwebsite") ||
             op.equalsIgnoreCase("GetBucketcors") ||
+            op.equalsIgnoreCase("GetBuckettagging") ||
             op.equalsIgnoreCase("GetObject") ||
             op.equalsIgnoreCase("GetObjectacl") ||
             op.equalsIgnoreCase("GetObjecttagging") ||
@@ -479,6 +483,7 @@ public class S3Op {
                    op.equalsIgnoreCase("PutBucketwebsite") ||
                    op.equalsIgnoreCase("PutBucketcors") ||
                    op.equalsIgnoreCase("PutBucketversioning") ||
+                   op.equalsIgnoreCase("PutBuckettagging") ||
                    op.equalsIgnoreCase("PutObject") ||
                    op.equalsIgnoreCase("PutObjectacl") ||
                    op.equalsIgnoreCase("PutObjecttagging") ||
@@ -493,6 +498,7 @@ public class S3Op {
                    op.equalsIgnoreCase("DeleteBucketlifecycle") ||
                    op.equalsIgnoreCase("DeleteBucketwebsite") ||
                    op.equalsIgnoreCase("DeleteBucketcors") ||
+                   op.equalsIgnoreCase("DeleteBuckettagging") ||
                    op.equalsIgnoreCase("DeleteObject") ||
                    op.equalsIgnoreCase("DeleteObjecttagging") ||
                    op.equalsIgnoreCase("AbortMultipartUpload")) {
