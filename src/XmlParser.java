@@ -823,8 +823,22 @@ public class XmlParser {
                         case "ID":
                             System.out.println("    <ID>" + ruleSubNode.getTextContent() + "</ID>");
                             break;
-                        case "Prefix":
-                            System.out.println("    <Prefix>" + ruleSubNode.getTextContent() + "</Prefix>");
+                        case "Filter":
+                            System.out.println("    <Filter>");
+                            NodeList filter_results = ruleSubNode.getChildNodes();
+                            int filter_length = filter_results.getLength();
+                            for (int filter_index = 0; filter_index < filter_length; ++filter_index) {
+                                Node filterSubNode = filter_results.item(filter_index);
+                                switch (filterSubNode.getNodeName()) {
+                                case "Prefix":
+                                    System.out.println("      <Prefix>" + filterSubNode.getTextContent() + "</Prefix>");
+                                    break;
+                                default:
+                                    System.out.println("      Unknown format!!!");
+                                    break;
+                                }
+                            }
+                            System.out.println("    </Filter>");
                             break;
                         case "Status":
                             System.out.println("    <Status>" + ruleSubNode.getTextContent() + "</Status>");
