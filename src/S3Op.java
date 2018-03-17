@@ -246,7 +246,11 @@ public class S3Op {
                    op_type.equalsIgnoreCase("GetBucketcors") || 
                    op_type.equalsIgnoreCase("DeleteBucketcors")) {
             sub_resource = "cors";
-     } else if (op_type.equalsIgnoreCase("GetBucketObjectversions")) {
+        } else if (op_type.equalsIgnoreCase("PutBucketpolicy") ||
+                   op_type.equalsIgnoreCase("GetBucketpolicy") ||
+                   op_type.equalsIgnoreCase("DeleteBucketpolicy")) {
+            sub_resource = "policy";
+        } else if (op_type.equalsIgnoreCase("GetBucketObjectversions")) {
             sub_resource = "versions";
         } else if (op_type.equalsIgnoreCase("DeleteMultipleObjects")) {
             sub_resource = "delete";
@@ -471,6 +475,7 @@ public class S3Op {
             op.equalsIgnoreCase("GetBucketwebsite") ||
             op.equalsIgnoreCase("GetBucketcors") ||
             op.equalsIgnoreCase("GetBuckettagging") ||
+            op.equalsIgnoreCase("GetBucketpolicy") ||
             op.equalsIgnoreCase("GetObject") ||
             op.equalsIgnoreCase("GetObjectacl") ||
             op.equalsIgnoreCase("GetObjecttagging") ||
@@ -484,6 +489,7 @@ public class S3Op {
                    op.equalsIgnoreCase("PutBucketcors") ||
                    op.equalsIgnoreCase("PutBucketversioning") ||
                    op.equalsIgnoreCase("PutBuckettagging") ||
+                   op.equalsIgnoreCase("PutBucketpolicy") ||
                    op.equalsIgnoreCase("PutObject") ||
                    op.equalsIgnoreCase("PutObjectacl") ||
                    op.equalsIgnoreCase("PutObjecttagging") ||
@@ -499,6 +505,7 @@ public class S3Op {
                    op.equalsIgnoreCase("DeleteBucketwebsite") ||
                    op.equalsIgnoreCase("DeleteBucketcors") ||
                    op.equalsIgnoreCase("DeleteBuckettagging") ||
+                   op.equalsIgnoreCase("DeleteBucketpolicy") ||
                    op.equalsIgnoreCase("DeleteObject") ||
                    op.equalsIgnoreCase("DeleteObjecttagging") ||
                    op.equalsIgnoreCase("AbortMultipartUpload")) {
@@ -779,6 +786,7 @@ public class S3Op {
                 op.equals("PutBucketwebsite") ||
                 op.equals("PutBucketcors") ||
                 op.equals("PutBucketlifecycle") ||
+                op.equals("PutBucketpolicy") ||
                 op.equals("DeleteMultipleObjects")) {
                 // object is null and file is not null
                 object_key = "";
