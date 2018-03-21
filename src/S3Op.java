@@ -271,7 +271,9 @@ public class S3Op {
             sub_resource += ("uploadId=" + parse.getUpload_id());
         } else if (op_type.equalsIgnoreCase("DeleteObject") || 
                    op_type.equalsIgnoreCase("GetObject") || 
-                   op_type.equalsIgnoreCase("HeadObject")) {
+                   op_type.equalsIgnoreCase("HeadObject") ||
+                   op_type.equalsIgnoreCase("PutObjectacl") ||
+                   op_type.equalsIgnoreCase("GetObjectacl")) {
             if (!parse.getVersion_id().isEmpty()) {
                 sub_resource += ("versionId=" + parse.getVersion_id());
             }
@@ -282,6 +284,12 @@ public class S3Op {
                    op_type.equalsIgnoreCase("GetBuckettagging") || 
                    op_type.equalsIgnoreCase("DeleteBuckettagging")) {
             sub_resource = "tagging";
+            if (!parse.getVersion_id().isEmpty() && 
+                    (op_type.equalsIgnoreCase("PutObjecttagging") ||
+                     op_type.equalsIgnoreCase("GetObjecttagging") ||
+                     op_type.equalsIgnoreCase("DeleteObjecttagging"))) {
+                sub_resource += ("&versionId=" + parse.getVersion_id());
+            }
         }
     }
     
