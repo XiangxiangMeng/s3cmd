@@ -31,7 +31,7 @@ public class ParseArgs {
     private String upload_id = "";
     private int part_number = 0;	// total part number
     private int part_id = 0;     //current part id
-    private int part_size = 0;
+    private long part_size = 0;
     private boolean anonymous = false;
     private boolean use_md5 = false;
     private boolean upload_static_website = false;
@@ -356,7 +356,7 @@ public class ParseArgs {
 
         char last = part_sz.charAt(part_sz.length() - 1);
         String part_size_str = part_sz.substring(0, part_sz.length() - 1);
-        int size = Integer.valueOf(part_size_str);
+        long size = Long.valueOf(part_size_str);
 
         switch (last) {
         case 'K':
@@ -465,7 +465,7 @@ public class ParseArgs {
         this.part_id = part_id;
     }
 
-    public int getPart_size() {
+    public long getPart_size() {
         return part_size;
     }
 
