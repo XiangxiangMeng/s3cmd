@@ -35,8 +35,8 @@ import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.FileEntity;
+import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
@@ -687,14 +687,16 @@ public class S3Op {
         if (file != null) {
             //HttpEntity reqEntity = new FileEntity(file);
             HttpEntity reqEntity = GetHttpEntity(file, part_num, part_id, part_size);
-        
-            if (op_type.equals("PUT")) {
-                ((HttpPut) http_request).setEntity(reqEntity);
-            } else if (op_type.equals("POST")) {
-                ((HttpPost) http_request).setEntity(reqEntity);
+            if (reqEntity != null) {
+                if (op_type.equals("PUT")) {
+                    ((HttpPut) http_request).setEntity(reqEntity);
+                } else if (op_type.equals("POST")) {
+                    ((HttpPost) http_request).setEntity(reqEntity);
+                }
             }
         }
     }
+
     private HttpEntity GetHttpEntity(File file, int part_num, int part_id, long part_size) throws IOException {
         long file_size = file.length();
         long buffer_size = 0;
@@ -709,8 +711,6 @@ public class S3Op {
             return null;
         }
 
-        FileInputStream fStream = new FileInputStream(file);
-
         long result[] = get_buffer_size_and_offset(file_size);
         buffer_size = result[0];
         offset = result[1];
@@ -718,19 +718,15 @@ public class S3Op {
         if (parse.isIs_verbose()) {
             System.out.println("filesize: " + file_size + ", offset: " + offset + ", buffer_size: " + buffer_size);
         }
-        
-        byte[] buffer = new byte[(int) buffer_size];
 
+        FileInputStream fStream = new FileInputStream(file);
         fStream.skip(offset);
-        fStream.read(buffer, 0, (int) buffer_size);
-
-        ByteArrayEntity entity = new ByteArrayEntity(buffer);
-
+        InputStreamEntity entity = new InputStreamEntity(fStream, buffer_size);
         fStream.close();
 
         return entity;
     }
-    
+
     /* ****************************
      * index: 0 - buffer size
      *        1 - offset
