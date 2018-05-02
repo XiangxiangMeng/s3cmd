@@ -109,6 +109,7 @@ public class ParseArgs {
                                                   + "<GetBucketversioning>\n"
                                                   + "<GetBuckettagging>\n"
                                                   + "<GetBucketpolicy>\n"
+                                                  + "<GetBucketlocation>\n"
                                                   + "<HeadBucket>\n"
                                                   + "<PutBucket>\n"
                                                   + "<PutBucketacl>\n"

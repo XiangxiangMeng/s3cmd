@@ -290,6 +290,8 @@ public class S3Op {
                      op_type.equalsIgnoreCase("DeleteObjecttagging"))) {
                 sub_resource += ("&versionId=" + parse.getVersion_id());
             }
+        } else if (op_type.equalsIgnoreCase("GetBucketlocation")) {
+            sub_resource = "location";
         }
     }
     
@@ -484,6 +486,7 @@ public class S3Op {
             op.equalsIgnoreCase("GetBucketcors") ||
             op.equalsIgnoreCase("GetBuckettagging") ||
             op.equalsIgnoreCase("GetBucketpolicy") ||
+            op.equalsIgnoreCase("GetBucketlocation") ||
             op.equalsIgnoreCase("GetObject") ||
             op.equalsIgnoreCase("GetObjectacl") ||
             op.equalsIgnoreCase("GetObjecttagging") ||

@@ -30,6 +30,7 @@ public class CheckArgs {
                                                                    "GetBucketwebsite",
                                                                    "GetBuckettagging",
                                                                    "GetBucketpolicy",
+                                                                   "GetBucketlocation",
                                                                    "HeadBucket",
                                                                    "PutBucket",
                                                                    "PutBucketacl",
