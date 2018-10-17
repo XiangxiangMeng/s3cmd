@@ -725,7 +725,7 @@ public class S3Op {
         FileInputStream fStream = new FileInputStream(file);
         fStream.skip(offset);
         InputStreamEntity entity = new InputStreamEntity(fStream, buffer_size);
-        fStream.close();
+        //fStream.close();
 
         return entity;
     }
