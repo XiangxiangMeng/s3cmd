@@ -73,10 +73,11 @@ public class S3Op {
     int part_id = 0;
     long part_size = 0;
     long last_part_size = 0;
+    boolean upload_single_part = false;
     
     /* XML parser */
     private XmlParser xml_parser;
-    
+
     public S3Op(ParseArgs parse) {
         this.parse = parse;
         x_amz_http_headers = new TreeMap<>();
@@ -714,10 +715,15 @@ public class S3Op {
             return null;
         }
 
-        long result[] = get_buffer_size_and_offset(file_size);
+        if (upload_single_part && (part_size > file_size)) {
+            System.out.println("Part size is greater than the file size!");
+            return null;
+        }
+
+        long result[] = get_buffer_size_and_offset(file_size, part_size);
         buffer_size = result[0];
         offset = result[1];
-        
+
         if (parse.isIs_verbose()) {
             System.out.println("filesize: " + file_size + ", offset: " + offset + ", buffer_size: " + buffer_size);
         }
@@ -734,10 +740,17 @@ public class S3Op {
      * index: 0 - buffer size
      *        1 - offset
      * ****************************/
-    private long[] get_buffer_size_and_offset(long file_size) {
+    private long[] get_buffer_size_and_offset(long file_size, long part_size) {
         long last_part_size = 0;
         long calc_part_size = 0;
         long part_size_arr[] = new long[2];
+
+        if (upload_single_part) {
+            part_size_arr[0] = part_size;
+            part_size_arr[1] = 0;
+
+            return part_size_arr;
+        }
 
         if (part_size > 0) {
             if (part_id == part_num) {
@@ -919,7 +932,7 @@ public class S3Op {
                  * if set part-size, ignore part-num and part-id 
                  * if no set part-size and no set part-id, upload all parts
                  * ************************************************************/
-                if (++part_id > part_num) {
+                if ((++part_id > part_num) || upload_single_part) {
                     break;  //while
                 }
 
@@ -944,7 +957,7 @@ public class S3Op {
             header = resp_header[i];
             System.out.println(header.getName() + ":" + header.getValue());
         }
-        
+
         System.out.println("=====================================================================================");
     }
     
@@ -956,6 +969,14 @@ public class S3Op {
             this.part_num = part_num;
             this.part_id = part_id;
 
+            return;
+        }
+
+        // specify both part_id and part_size
+        if (part_id > 0) {
+            this.part_id = part_id;
+            this.part_size = part_size;
+            this.upload_single_part = true;
             return;
         }
 

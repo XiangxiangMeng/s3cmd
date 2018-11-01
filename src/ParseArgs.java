@@ -351,13 +351,21 @@ public class ParseArgs {
         
         arg_check.check();
     }
-    
+
     private void parse_part_size(String part_sz) {
+        String part_sz_bk = part_sz;
         part_sz = part_sz.trim();
 
+        long size = 0;
         char last = part_sz.charAt(part_sz.length() - 1);
-        String part_size_str = part_sz.substring(0, part_sz.length() - 1);
-        long size = Long.valueOf(part_size_str);
+        if (last == 'K' || last == 'k' ||
+            last == 'M' || last == 'm' ||
+            last == 'G' || last == 'g') {
+            String part_size_str = part_sz.substring(0, part_sz.length() - 1);
+            size = Long.valueOf(part_size_str);
+        } else {
+            size = Long.valueOf(part_sz_bk);
+        }
 
         switch (last) {
         case 'K':
@@ -470,7 +478,7 @@ public class ParseArgs {
         return part_size;
     }
 
-    public void setPart_size(int part_size) {
+    public void setPart_size(long part_size) {
         this.part_size = part_size;
     }
 
