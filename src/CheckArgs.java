@@ -469,7 +469,8 @@ public class CheckArgs {
         boolean put_acl_by_header = false;
         for (Map.Entry<String, String> entry : parse.getHttp_headers().entrySet()) {
             if (!put_acl_headers_set.contains(entry.getKey())) {
-                throw new InvalidHeaderException();
+                // allow user defined header, eq: Referer=http://www.xsky.com
+                // throw new InvalidHeaderException();
             } else {
                 put_acl_by_header = true;
             }
