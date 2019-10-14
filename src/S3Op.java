@@ -915,8 +915,9 @@ public class S3Op {
 
                 if (entity != null) {
                     long resp_len = entity.getContentLength();
-
-                    if (resp_len > 0) {
+                    op_type = parse.getOp_type();
+                    // list bucket return multi-chunks without content-length
+                    if (resp_len > 0 || op_type.equalsIgnoreCase("GetBucket") || op_type.equalsIgnoreCase("GetBucketObjectversions")) {
                         if (parse.getOp_type().equalsIgnoreCase("GetObject")) {
                             createFile(parse.getFile_path(), entity);
                         } else {
