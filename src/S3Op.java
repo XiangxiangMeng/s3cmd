@@ -12,6 +12,7 @@ import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -62,7 +63,6 @@ public class S3Op {
     private String http_authorization = "";
     private String http_date = "";
     
-    private HttpRequestBase http_request = null;
     private final static String HMAC_SHA1 = "HmacSHA1";
 
     /* content type */
@@ -637,12 +637,8 @@ public class S3Op {
         http_authorization = "AWS " + parse.getAccess_key() + ":" + getSignature(parse.getSecret_key(), signature_str);
     }
     
-    private void gen_http_request() throws URISyntaxException {
-        if (http_request != null) {
-            http_request.reset();
-            http_request.setURI(new URI(url_text));
-            return;
-        }
+    private HttpRequestBase gen_http_request() throws URISyntaxException {
+        HttpRequestBase http_request = null;
 
         if (op_type.equals("GET")) {
             http_request = new HttpGet(url_text);
@@ -656,10 +652,12 @@ public class S3Op {
             http_request = new HttpDelete(url_text);
         } else if (op_type.equals("OPTIONS")) {
             http_request = new HttpOptions(url_text);
-        } 
+        }
+
+        return http_request;
     }
     
-    private void process_http_headers_and_body(File file) throws IOException {
+    private void process_http_headers_and_body(HttpRequestBase http_request, File file) throws IOException {
         if (parse.isVirtual_hosted_style()) {
             String bucket = parse.getBucket_name();
             if (!bucket.isEmpty()) {
@@ -731,7 +729,6 @@ public class S3Op {
         FileInputStream fStream = new FileInputStream(file);
         fStream.skip(offset);
         InputStreamEntity entity = new InputStreamEntity(fStream, buffer_size);
-        //fStream.close();
 
         return entity;
     }
@@ -882,7 +879,7 @@ public class S3Op {
                     part_id = parse.getPart_id();
                 }
             }
-        
+
             while (true) {
                 object_key = re_get_object_key(object_key);
 
@@ -895,16 +892,15 @@ public class S3Op {
                 gen_request_uri(URLEncoder.encode(object_key, "utf-8"));
                 //gen_request_uri(object_key);
                 gen_url_text();
-                gen_http_request();
+                HttpRequestBase http_request = gen_http_request();
                 gen_md5(file);
                 gen_date();
                 gen_signature_str();
                 gen_authorization();
 
-                process_http_headers_and_body(file);
+                process_http_headers_and_body(http_request, file);
 
                 CloseableHttpClient http_client = HttpClients.createDefault();
-
                 CloseableHttpResponse response = http_client.execute(http_request);
                 
                 Header[] resp_header = response.getAllHeaders();
@@ -915,9 +911,9 @@ public class S3Op {
 
                 if (entity != null) {
                     long resp_len = entity.getContentLength();
-                    op_type = parse.getOp_type();
+                    String type = parse.getOp_type();
                     // list bucket return multi-chunks without content-length
-                    if (resp_len > 0 || op_type.equalsIgnoreCase("GetBucket") || op_type.equalsIgnoreCase("GetBucketObjectversions")) {
+                    if (resp_len > 0 || type.equalsIgnoreCase("GetBucket") || type.equalsIgnoreCase("GetBucketObjectversions")) {
                         if (parse.getOp_type().equalsIgnoreCase("GetObject")) {
                             createFile(parse.getFile_path(), entity);
                         } else {
@@ -1050,9 +1046,10 @@ public class S3Op {
     private String getSignature(String skey, String str) throws UnsupportedEncodingException, ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InvalidKeyException, NoSuchAlgorithmException {
         String u8_data = new String(str.getBytes(), "UTF-8");
         byte[] rawHmac = getSignature(u8_data.getBytes(), skey.getBytes());
-        String base64 = encodeBase64(rawHmac);
+        String base64 = Base64.getEncoder().encodeToString(rawHmac);
+        // String base64 = encodeBase64(rawHmac);
 
-        //System.out.println(base64);
+        // System.out.println(base64);
         return base64;
     }
 
